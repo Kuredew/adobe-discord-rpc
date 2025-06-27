@@ -14,7 +14,8 @@ Adobe extensions to display 'Playing After Effects' on your discord profile!
 
 ## How To Install ?
 1. **Download and extract the downloaded rar file from extensions from releases, you will see the contents like this**
-   ![Screenshot 2025-06-27 183822](https://github.com/user-attachments/assets/7dd88f42-4e4a-4388-8ea8-fd6475a2012d)
+   
+![Screenshot 2025-06-27 183822](https://github.com/user-attachments/assets/7dd88f42-4e4a-4388-8ea8-fd6475a2012d)
 
 2. **Find a folder named ```com.kureichi.discordrpc```, then copy it**
 3. **Paste it to ```C:\Program Files (x86)\Common Files\Adobe\CEP\extensions```**
