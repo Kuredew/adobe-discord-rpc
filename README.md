@@ -19,7 +19,7 @@ Adobe extensions to display 'Playing After Effects' on your discord profile!
 
 2. **Find a folder named ```com.kureichi.discordrpc```, then copy it**
 3. **Paste it to ```C:\Program Files (x86)\Common Files\Adobe\CEP\extensions```**
-4. **Open After Effects, then go to Window > extensions, you will see a new extension named ```Kureichi RPC```.**
+4. **Open After Effects, then go to Window > extensions, you will see a new extension named ```Discord RPC```.**
 5. **Open the extension and dock it where you want**
 
 ## Contributing
@@ -28,4 +28,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE.md).
