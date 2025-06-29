@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExtensionList>
-    <Extension Id="com.kureichi.discordrpc.after-effect-panel">
+    <Extension Id="com.kureichi.discordrpc.after-effect">
         <HostList>
             <Host Name="AEFT" Port="7777"/>
         </HostList>
     </Extension>
-    <Extension Id="com.kureichi.discordrpc.photoshop-panel">
+    <Extension Id="com.kureichi.discordrpc.photoshop">
         <HostList>
-            <Host Name="PHSP" Port="7777"/>
+            <Host Name="PHSP" Port="7778"/>
+            <Host Name="PHXS" Port="7779"/>
+        </HostList>
+    </Extension>
+    <Extension Id="com.kureichi.discordrpc.panel">
+        <HostList>
+            <Host Name="AEFT" Port="7077"/>
+            <Host Name="PHSP" Port="7078"/>
+            <Host Name="PHXS" Port="7079"/>
         </HostList>
     </Extension>
 </ExtensionList>

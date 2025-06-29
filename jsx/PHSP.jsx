@@ -1,34 +1,36 @@
-function getAppCode() {
-    return 'PHSP';
+//#include "json2.js";
+
+function getDetails() {
+    try {
+        return app.activeDocument.name;
+    } catch (e) {
+        return 'Untitled Project.psd';
+    }
 }
 
-function getInfo() {
-    var project = app.project;
-    var projectName = null;
-    var compName = null;
-    var totalLayer = null;
-    
-    if (project) {
-        try {
-            projectName = decodeURIComponent(project.file.name);
-        } catch (e) {
-            // Nothing, just make sure this is work.
-        }
+function getState() {
+    try {
+        return 'Editing on ' + app.activeDocument.activeLayer.name;
+    } catch (e) {
+        return 'Idling.'
     }
+}
 
-    /*
-    if (project.activeItem && project.activeItem instanceof CompItem) {
-        var comp = project.activeItem;
+/*
+function getInfo() {
+    var docName = getdocName();
+    //var activeLayer = 'Bruh';
+    
+    //getdocName(docName);
+    //getActiveLayer(activeLayer);
 
-        compName = comp.name;
-        totalLayer = comp.layers.length;
-    }*/
 
     var info = {
-        details: projectName ? projectName : 'Untitled Project.psd',
-        state: 'Idling.'
+        details: docName ? docName : 'Untitled Project.psd',
+        state: 'bjir'
     }
 
+    //var infoString = '{"details": "test", "state": "bjir"}';
 
     return JSON.stringify(info);
-}
+}*/

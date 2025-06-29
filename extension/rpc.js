@@ -4,47 +4,39 @@
 const largeImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1750852817/adobe-after-effects-icon_m2za1h.png';
 const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png';
 
-
+const connectingStateEvent = new CSEvent('com.kureichi.rpc.connecting-state', 'APPLICATION');
+const connectedStateEvent = new CSEvent('com.kureichi.rpc.connected-state', 'APPLICATION');
+const disconnectedStateEvent = new CSEvent('com.kureichi.rpc.disconnected-state', 'APPLICATION');
 //const clientId = '1387049921982501055';
 
 const csInterface = new CSInterface();
 const RPC = require('discord-rpc');
 const startTimestamp = new Date();
+
+const appCode = csInterface.getApplicationID();
+const appName = client[appCode].name;
+const appClientId = client[appCode].id;
+const appImg = client[appCode].img;
 //const { clientId } = require('./clientId');
 
 
-const stateHTML = document.getElementById('state');
-const connectButton = document.getElementById('button');
-const loader = document.getElementById('loader');
-
 const state = {
-        appCode: null,
-        clientId: null,
         connected: false,
         details: null,
         state: null
     }
 
 function stateConnectedSwitch() {
-    stateHTML.innerHTML = 'Connected!'
-    stateHTML.style.color = 'green';
-    connectButton.innerHTML = 'Disconnect';
-
-    loader.style.opacity = '0%';
-    state.connected = true
+    csInterface.dispatchEvent(connectedStateEvent);
+    state.connected = true;
 }
 
 function stateConnectingSwitch() {
-    connectButton.innerHTML = 'Connecting';
-    loader.style.opacity = '80%';
+    csInterface.dispatchEvent(connectingStateEvent);
 }
 
 function stateDisconnectedSwitch() {
-    stateHTML.innerHTML = 'Disconnected';
-    stateHTML.style.color = 'brown';
-    connectButton.innerHTML = 'Connect';
-
-    loader.style.opacity = '0%';
+    csInterface.dispatchEvent(disconnectedStateEvent);
     state.connected = false;
 }
 
@@ -60,29 +52,29 @@ function login() {
         rpc = new RPC.Client({ transport: 'ipc' });
 
         rpc.on('ready', () => {
-            console.log('Discord RPC has Connected guys!');
-            console.log(`Logged in to (${rpc.user.username})`);
+            console.log('RPC:: Discord RPC has Connected guys!');
+            console.log(`RPC:: Logged in to (${rpc.user.username})`);
             
             stateConnectedSwitch();
             updateActivity();
         })
 
         rpc.on('disconnected', () => {
-            console.log('Discord RPC is Disconnected!');
+            console.log('RPC:: Discord RPC is Disconnected!');
             rpc.destroy();
 
             stateDisconnectedSwitch();
         })
 
         rpc.login({
-            clientId: state.clientId
+            clientId: appClientId
         }).catch((e) => {
             console.log(e);
             
             stateDisconnectedSwitch();
 
             // if discord stop responding to rpc, you must restart discord.
-            stateHTML.innerHTML = 'Please restart your Discord.';
+            //stateHTML.innerHTML = 'Please restart your Discord.';
         })
     } else {
         updateActivity();
@@ -102,36 +94,52 @@ function updateActivity() {
         details: state.details,
         state: state.state,
         startTimestamp: startTimestamp,
-        largeImageKey: largeImageURL,
+        largeImageKey: appImg,
+        largeImageText: appName,
         smallImageKey: smallImageURL//'https://res.cloudinary.com/ddsuizdgf/image/upload/v1744520448/uwkzfgvgpp9curiqyjwi.png'
     })
 
-    console.log('Updated Activity');
+    console.log('RPC:: Updated Activity');
 }
 
 function main() {
     if (state.connected) {
+
+        // I dont use getInfo() function anymore.
+        /*
         csInterface.evalScript('getInfo()', function(result) {
 
-            //console.log(result)
+            console.log(result);
             parsed = JSON.parse(result);
             
             if (parsed.details != state.details ||
                 parsed.state != state.state
             ) {
-                console.log(`Info Changed!\n Detaiils : ${parsed.details}\n State: ${parsed.state}`);
+                console.log(`RPC:: Info Changed!\n Detaiils : ${parsed.details}\n State: ${parsed.state}`);
 
                 state.details = parsed.details;
                 state.state = parsed.state;
                 
                 updateActivity();
             }
-        })
+        })*/
+
+        // Inspired by tee
+        updateState('details', 'getDetails()');
+        updateState('state', 'getState()');
     }
 }
 
+function updateState(stateProps, func) {
+    csInterface.evalScript(func, (r) => {
+        if (r != state[stateProps]) {
+            state[stateProps] = r;
+            updateActivity();
+        }
+    })
+}
 
-connectButton.addEventListener('click', () => {
+csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
     if (!state.connected) {
         login();
     } else {
@@ -139,16 +147,19 @@ connectButton.addEventListener('click', () => {
     }
 })
 
+// hellnah
+csInterface.addEventListener('com.kureichi.rpc.get-connection-info', () => {
+    if (state.connected) {
+        stateConnectedSwitch();
+    } else {
+        stateDisconnectedSwitch();
+    }
+})
+
 
 function init() {
-    csInterface.evalScript('getAppCode()', (result) => {
-        state.clientId = clientId[result];
-        login();
-        setInterval(main, 1000);
-    })
+    login();
+    setInterval(main, 1000);
 }
 
-
-window.onload = function() {
-    init();
-}
+init();

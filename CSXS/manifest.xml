@@ -5,8 +5,9 @@
     ExtensionBundleName="Kureichi RPC">
 
   <ExtensionList>
-    <Extension Id="com.kureichi.discordrpc.after-effect-panel" Version="1.0.0"/>
-    <Extension Id="com.kureichi.discordrpc.photoshop-panel" Version="1.0.0"/>
+    <Extension Id="com.kureichi.discordrpc.panel" Version="1.0.0"/>
+    <Extension Id="com.kureichi.discordrpc.after-effect" Version="1.0.0"/>
+    <Extension Id="com.kureichi.discordrpc.photoshop" Version="1.0.0"/>
   </ExtensionList>
 
   <ExecutionEnvironment>
@@ -25,18 +26,11 @@
 
   <DispatchInfoList>
 
-    <Extension Id="com.kureichi.discordrpc.after-effect-panel">
-      <HostList>
-        <Host Name="AEFT" />
-      </HostList>
+    <Extension Id="com.kureichi.discordrpc.panel">
       <DispatchInfo>
         <Resources>
           <MainPath>./panel/index.html</MainPath>
-          <ScriptPath>./jsx/AEFT.jsx</ScriptPath>
           <CEFCommandLine>
-            <Parameter>--allow-file-access</Parameter>
-            <Parameter>--allow-file-access-from-files</Parameter>
-            <Parameter>--disable-application-cache</Parameter>
             <Parameter>--enable-nodejs</Parameter>
             <Parameter>--mixed-context</Parameter>
           </CEFCommandLine>
@@ -51,6 +45,108 @@
             <Size>
               <Width>400</Width>
               <Height>300</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.after-effect">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./extension/index.html</MainPath>
+          <ScriptPath>./jsx/AEFT.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.photoshop">
+      <HostList>
+        <Host Name="PHSP" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./extension/index.html</MainPath>
+          <ScriptPath>./jsx/PHSP.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.photoshop">
+      <HostList>
+        <Host Name="PHXS" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./extension/index.html</MainPath>
+          <ScriptPath>./jsx/PHXS.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
             </Size>
           </Geometry>
         </UI>
