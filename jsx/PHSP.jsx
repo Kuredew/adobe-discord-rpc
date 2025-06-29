@@ -1,3 +1,7 @@
+function getAppCode() {
+    return 'PHSP';
+}
+
 function getInfo() {
     var project = app.project;
     var projectName = null;
@@ -12,17 +16,17 @@ function getInfo() {
         }
     }
 
+    /*
     if (project.activeItem && project.activeItem instanceof CompItem) {
         var comp = project.activeItem;
 
         compName = comp.name;
         totalLayer = comp.layers.length;
-    }
+    }*/
 
     var info = {
-        projectName: projectName,
-        compName: compName,
-        totalLayer: totalLayer ? totalLayer : 0
+        details: projectName ? projectName : 'Untitled Project.psd',
+        state: 'Idling.'
     }
 
 

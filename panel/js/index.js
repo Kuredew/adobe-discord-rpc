@@ -5,20 +5,24 @@ const largeImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v175085
 const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png';
 
 
-const clientId = '1387049921982501055';
+//const clientId = '1387049921982501055';
 
 const csInterface = new CSInterface();
 const RPC = require('discord-rpc');
 const startTimestamp = new Date();
+//const { clientId } = require('./clientId');
+
+
 const stateHTML = document.getElementById('state');
 const connectButton = document.getElementById('button');
 const loader = document.getElementById('loader');
 
 const state = {
+        appCode: null,
+        clientId: null,
         connected: false,
-        projectName: null,
-        compName: null,
-        totalLayer: null
+        details: null,
+        state: null
     }
 
 function stateConnectedSwitch() {
@@ -47,6 +51,7 @@ function stateDisconnectedSwitch() {
 let rpc
 function login() {
     stateConnectingSwitch();
+    
 
     if (!state.connected) {
         // WHY? for some reason rpc can't appear when logging in again after destroying, do you know something?
@@ -70,7 +75,7 @@ function login() {
         })
 
         rpc.login({
-            clientId: clientId
+            clientId: state.clientId
         }).catch((e) => {
             console.log(e);
             
@@ -94,8 +99,8 @@ function clearActivity() {
 
 function updateActivity() {
     rpc.setActivity({
-        details: state.projectName ? state.projectName : 'Untitled Project.aep',
-        state: state.compName ? 'Working on '+ state.compName + ` (${state.totalLayer} Layer)` : 'No Composition',
+        details: state.details,
+        state: state.state,
         startTimestamp: startTimestamp,
         largeImageKey: largeImageURL,
         smallImageKey: smallImageURL//'https://res.cloudinary.com/ddsuizdgf/image/upload/v1744520448/uwkzfgvgpp9curiqyjwi.png'
@@ -104,7 +109,6 @@ function updateActivity() {
     console.log('Updated Activity');
 }
 
-
 function main() {
     if (state.connected) {
         csInterface.evalScript('getInfo()', function(result) {
@@ -112,15 +116,13 @@ function main() {
             //console.log(result)
             parsed = JSON.parse(result);
             
-            if (parsed.projectName != state.projectName ||
-                parsed.compName != state.compName ||
-                parsed.totalLayer != state.totalLayer
+            if (parsed.details != state.details ||
+                parsed.state != state.state
             ) {
-                console.log(`Info Changed!\n Projact : ${parsed.projectName}\n Composition: ${parsed.compName}\n Total Layer : ${parsed.totalLayer}`);
+                console.log(`Info Changed!\n Detaiils : ${parsed.details}\n State: ${parsed.state}`);
 
-                state.projectName = parsed.projectName;
-                state.compName = parsed.compName;
-                state.totalLayer = parsed.totalLayer;
+                state.details = parsed.details;
+                state.state = parsed.state;
                 
                 updateActivity();
             }
@@ -139,8 +141,11 @@ connectButton.addEventListener('click', () => {
 
 
 function init() {
-    login();
-    setInterval(main, 1000);
+    csInterface.evalScript('getAppCode()', (result) => {
+        state.clientId = clientId[result];
+        login();
+        setInterval(main, 1000);
+    })
 }
 
 

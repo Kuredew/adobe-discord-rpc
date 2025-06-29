@@ -5,12 +5,15 @@
     ExtensionBundleName="Kureichi RPC">
 
   <ExtensionList>
-    <Extension Id="com.kureichi.discordrpc.panel" Version="1.0.0"/>
+    <Extension Id="com.kureichi.discordrpc.after-effect-panel" Version="1.0.0"/>
+    <Extension Id="com.kureichi.discordrpc.photoshop-panel" Version="1.0.0"/>
   </ExtensionList>
 
   <ExecutionEnvironment>
     <HostList>
-      <Host Name="AEFT" Version="[13.5,99.9]"/>
+      <Host Name="AEFT" Version="[0.0,99.9]"/>
+      <Host Name="PHSP" Version="[0.0,99.9]"/>
+      <Host Name="PHXS" Version="[0.0,99.9]"/>
     </HostList>
     <LocaleList>
       <Locale Code="All"/>
@@ -21,11 +24,15 @@
   </ExecutionEnvironment>
 
   <DispatchInfoList>
-    <Extension Id="com.kureichi.discordrpc.panel">
+
+    <Extension Id="com.kureichi.discordrpc.after-effect-panel">
+      <HostList>
+        <Host Name="AEFT" />
+      </HostList>
       <DispatchInfo>
         <Resources>
           <MainPath>./panel/index.html</MainPath>
-          <ScriptPath>./hosts/main.jsx</ScriptPath>
+          <ScriptPath>./jsx/AEFT.jsx</ScriptPath>
           <CEFCommandLine>
             <Parameter>--allow-file-access</Parameter>
             <Parameter>--allow-file-access-from-files</Parameter>
@@ -49,6 +56,8 @@
         </UI>
       </DispatchInfo>
     </Extension>
+
+    
   </DispatchInfoList>
 
 </ExtensionManifest>
