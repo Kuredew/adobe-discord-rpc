@@ -8,11 +8,10 @@
     <img src="https://img.shields.io/badge/Status-Under%20Development-green?style=for-the-badge">
     <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge">
     <img src="https://img.shields.io/badge/Build%20with-Native%20js-yellow?style=for-the-badge">
+    <br />
+    <br />
+    <img src="https://github.com/user-attachments/assets/3a434c51-012b-4d59-9085-d3142a520e28">
 </div>
-
-
-![Screenshot 2025-06-27 183420](https://github.com/user-attachments/assets/3a434c51-012b-4d59-9085-d3142a520e28)
-
 
 
 ## About
