@@ -70,6 +70,10 @@
         <Lifecycle>
           <AutoVisible>false</AutoVisible>
           <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
             <Event>com.kureichi.rpc.ready</Event>
           </StartOn>
         </Lifecycle>
@@ -104,6 +108,10 @@
         <Lifecycle>
           <AutoVisible>false</AutoVisible>
           <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
             <Event>com.kureichi.rpc.ready</Event>
           </StartOn>
         </Lifecycle>
@@ -138,6 +146,10 @@
         <Lifecycle>
           <AutoVisible>false</AutoVisible>
           <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
             <Event>com.kureichi.rpc.ready</Event>
           </StartOn>
         </Lifecycle>

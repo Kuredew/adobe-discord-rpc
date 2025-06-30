@@ -15,22 +15,3 @@ function getState() {
         return 'Idling.'
     }
 }
-
-/*
-function getInfo() {
-    var docName = getdocName();
-    //var activeLayer = 'Bruh';
-    
-    //getdocName(docName);
-    //getActiveLayer(activeLayer);
-
-
-    var info = {
-        details: docName ? docName : 'Untitled Project.psd',
-        state: 'bjir'
-    }
-
-    //var infoString = '{"details": "test", "state": "bjir"}';
-
-    return JSON.stringify(info);
-}*/

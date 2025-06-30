@@ -23,6 +23,7 @@ function getState() {
 }
 
 // Deprecated.
+// cuz not all Adobe Apps work with JSON even with polyfill
 function getInfo() {
     var project = app.project;
     var projectName = null;
