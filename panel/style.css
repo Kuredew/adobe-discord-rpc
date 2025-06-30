@@ -24,6 +24,7 @@ body {
     color: white;
     display: flex;
     justify-content: center;
+    font-family: samsung-sharp-regular;
 }
 
 
@@ -42,7 +43,16 @@ body {
 }
 .panel .developer {
     font-family: samsung-sharp-medium;
+    margin-bottom: 10px;
+}
+.panel .version {
+    font-size: smaller;
     margin-bottom: 50px;
+    transition: 1s;
+}
+.panel .version:hover {
+    cursor: pointer;
+    opacity: 50%;
 }
 .panel .state {
     color: brown;

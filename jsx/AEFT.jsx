@@ -10,9 +10,9 @@ function getState() {
     try {
         var activeItem = app.project.activeItem;
 
-        if (activeItem instanceof CompItem) {
+        if (activeItem && activeItem instanceof CompItem) {
             compName = activeItem.name;
-            totalLayer = activeItem.layers.length ? activeItem.layers.length : 0
+            totalLayer = activeItem.layers.length ? activeItem.layers.length : 0;
 
             return 'Working on ' + compName + ' (' + totalLayer + ' Layers)'
         }
