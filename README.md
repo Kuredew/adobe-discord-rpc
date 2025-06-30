@@ -1,12 +1,14 @@
 # Adobe Discord Rich Presence
 ![Screenshot 2025-06-27 183420](https://github.com/user-attachments/assets/3a434c51-012b-4d59-9085-d3142a520e28)
 
-Adobe extensions to display 'Playing After Effects' on your discord profile!
+Adobe extension to show off to your friends that you are working by displaying 'Playing' on your Discord profile!
 
 
 
-> [!NOTE]  
-> this is a development version, I am working on another Adobe software
+Support for 
+- Adobe After Effects
+- Adobe Photoshop
+- Adobe Premiere Pro ( Soon )
 
 ![Status](https://img.shields.io/badge/Status-Under%20Development-green) ![License](https://img.shields.io/badge/License-MIT-blue) ![Language](https://img.shields.io/badge/Native-HTML|Javascript-yellow)
 
