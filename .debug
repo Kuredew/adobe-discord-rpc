@@ -11,11 +11,17 @@
             <Host Name="PHXS" Port="7779"/>
         </HostList>
     </Extension>
+    <Extension Id="com.kureichi.discordrpc.premiere-pro">
+        <HostList>
+            <Host Name="PPRO" Port="7780"/>
+        </HostList>
+    </Extension>
     <Extension Id="com.kureichi.discordrpc.panel">
         <HostList>
             <Host Name="AEFT" Port="7077"/>
             <Host Name="PHSP" Port="7078"/>
             <Host Name="PHXS" Port="7079"/>
+            <Host Name="PPRO" Port="7080"/>
         </HostList>
     </Extension>
 </ExtensionList>

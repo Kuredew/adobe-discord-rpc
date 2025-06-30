@@ -8,6 +8,7 @@
     <Extension Id="com.kureichi.discordrpc.panel" Version="1.0.0"/>
     <Extension Id="com.kureichi.discordrpc.after-effect" Version="1.0.0"/>
     <Extension Id="com.kureichi.discordrpc.photoshop" Version="1.0.0"/>
+    <Extension Id="com.kureichi.discordrpc.premiere-pro" Version="1.0.0"/>
   </ExtensionList>
 
   <ExecutionEnvironment>
@@ -15,6 +16,7 @@
       <Host Name="AEFT" Version="[0.0,99.9]"/>
       <Host Name="PHSP" Version="[0.0,99.9]"/>
       <Host Name="PHXS" Version="[0.0,99.9]"/>
+      <Host Name="PPRO" Version="[0.0,99.9]"/>
     </HostList>
     <LocaleList>
       <Locale Code="All"/>
@@ -165,6 +167,43 @@
       </DispatchInfo>
     </Extension>
 
+    <Extension Id="com.kureichi.discordrpc.premiere-pro">
+      <HostList>
+        <Host Name="PPRO" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./extension/index.html</MainPath>
+          <ScriptPath>./jsx/PPRO.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
     
   </DispatchInfoList>
 
