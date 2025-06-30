@@ -4,7 +4,7 @@ function getDetails() {
     try {
         return app.activeDocument.name;
     } catch (e) {
-        return 'Untitled Project.psd';
+        return 'Untitled.psd';
     }
 }
 
