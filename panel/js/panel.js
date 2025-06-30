@@ -21,7 +21,7 @@ async function checkLatestVersion() {
 
             const latestVersion = data.tag_name;
             if (latestVersion != PanelVersion) {
-                versionInfo.innerHTML = `New Update ${latestVersion}`;
+                versionInfo.innerHTML = `New Update ${latestVersion} ↗`;
             } else {
                 versionInfo.innerHTML = PanelVersion;
             }

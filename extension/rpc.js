@@ -1,7 +1,6 @@
 // Kureichi 2025
 // Last Modified at 25 June 2025
 
-const largeImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1750852817/adobe-after-effects-icon_m2za1h.png';
 const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png';
 
 const connectingStateEvent = new CSEvent('com.kureichi.rpc.connecting-state', 'APPLICATION');
@@ -21,6 +20,7 @@ const appImg = client[appCode].img;
 
 
 const state = {
+        power: 'on',
         connected: false,
         details: null,
         state: null
@@ -64,6 +64,10 @@ function login() {
             rpc.destroy();
 
             stateDisconnectedSwitch();
+
+            if (state.power == 'on') {
+                setTimeout(5000, login);
+            }
         })
 
         rpc.login({
@@ -72,6 +76,11 @@ function login() {
             console.log(e);
             
             stateDisconnectedSwitch();
+
+            // Reconnect if error
+            if (state.power == 'on') {
+                setTimeout(5000, login);
+            }
 
             // if discord stop responding to rpc, you must restart discord.
             //stateHTML.innerHTML = 'Please restart your Discord.';
@@ -141,8 +150,12 @@ function updateState(stateProps, func) {
 
 csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
     if (!state.connected) {
+        state.power = 'on';
+
         login();
     } else {
+        state.power = 'off';
+
         clearActivity();
     }
 })
