@@ -23,7 +23,7 @@ This project is inspired by tee ([adobe-discord-rpc](https://github.com/teeteete
 Support for 
 - Adobe After Effects
 - Adobe Photoshop
-- Adobe Premiere Pro ( Soon )
+- Adobe Premiere Pro
 
 
 
