@@ -42,7 +42,7 @@
         </Lifecycle>
         <UI>
           <Type>Panel</Type>
-          <Menu>Kureichi RPC</Menu>
+          <Menu>Discord RPC</Menu>
           <Geometry>
             <Size>
               <Width>400</Width>
