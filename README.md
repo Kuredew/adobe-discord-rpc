@@ -30,6 +30,9 @@ Support for
 ![Gambar WhatsApp 2025-06-27 pukul 15 58 35_fc123bd8](https://github.com/user-attachments/assets/6adaad16-f388-4db0-8835-93320d408d1d) ![Screenshot 2025-06-30 152835](https://res.cloudinary.com/ddsuizdgf/image/upload/v1751272350/Screenshot_2025-06-30_152835_ame70m.jpg)
 
 ## How To Install ?
+
+Here's the [video tutorial](https://youtu.be/dUXCviKRUGg)
+
 1. **Download and extract the ```com.kureichi.discordrpc.zip``` file from [Releases](https://github.com/Kuredew/adobe-discord-rpc/releases)**
 
 2. **Cut or copy ```com.kureichi.discordrpc``` folder from extracted file to ```C:\Program Files (x86)\Common Files\Adobe\CEP\extensions```**
