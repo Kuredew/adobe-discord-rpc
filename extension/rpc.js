@@ -18,12 +18,14 @@ const appClientId = client[appCode].id;
 const appImg = client[appCode].img;
 //const { clientId } = require('./clientId');
 
+let rpc
+let interval
 
 const state = {
         power: 'on',
         connected: false,
-        details: null,
-        state: null
+        details: '',
+        state: '-'
     }
 
 function stateConnectedSwitch() {
@@ -40,7 +42,6 @@ function stateDisconnectedSwitch() {
     state.connected = false;
 }
 
-let rpc
 function login() {
     stateConnectingSwitch();
     
@@ -54,6 +55,8 @@ function login() {
         rpc.on('ready', () => {
             console.log('RPC:: Discord RPC has Connected guys!');
             console.log(`RPC:: Logged in to (${rpc.user.username})`);
+            console.log('RPC:: Interval started.');
+            interval = setInterval(main, 1000);
             
             stateConnectedSwitch();
             updateActivity();
@@ -66,22 +69,29 @@ function login() {
             stateDisconnectedSwitch();
 
             if (state.power == 'on') {
-                setTimeout(5000, login);
+                console.log('RPC:: Reconnecting in 5s...');
+                setTimeout(login, 5000);
             }
+
+            console.log('RPC:: Interval stopped.');
+            clearInterval(interval);
         })
 
         rpc.login({
             clientId: appClientId
         }).catch((e) => {
-            console.log(e);
+            console.log(`RPC:: Error : ${e}`);
             
             stateDisconnectedSwitch();
 
             // Reconnect if error
             if (state.power == 'on') {
-                setTimeout(5000, login);
+                console.log('RPC:: Reconnecting in 5s...');
+                setTimeout(login, 5000);
             }
 
+            console.log('RPC:: Interval stopped.');
+            clearInterval(interval);
             // if discord stop responding to rpc, you must restart discord.
             //stateHTML.innerHTML = 'Please restart your Discord.';
         })
@@ -92,10 +102,10 @@ function login() {
     }
 }
 
-function clearActivity() {
+function destroy() {
     rpc.destroy();
 
-    stateDisconnectedSwitch();
+    //stateDisconnectedSwitch();
 }
 
 function updateActivity() {
@@ -141,6 +151,8 @@ function main() {
 
 function updateState(stateProps, func) {
     csInterface.evalScript(func, (r) => {
+        //console.log(`RPC:: Got ${stateProps} as ${r}`)
+
         if (r != state[stateProps]) {
             state[stateProps] = r;
             updateActivity();
@@ -149,14 +161,14 @@ function updateState(stateProps, func) {
 }
 
 csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
-    if (!state.connected) {
+    if (state.power == 'off') {
         state.power = 'on';
 
         login();
     } else {
         state.power = 'off';
 
-        clearActivity();
+        destroy();
     }
 })
 
@@ -172,7 +184,6 @@ csInterface.addEventListener('com.kureichi.rpc.get-connection-info', () => {
 
 function init() {
     login();
-    setInterval(main, 1000);
 }
 
 init();
