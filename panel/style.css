@@ -63,7 +63,9 @@ body {
 }
 .panel button {
     color: white;
-    border: none;
+    border-style: solid;
+    border-width: 1px;
+    border-color: yellow;
     outline:none;
     background-color: rgb(75, 75, 75);
 

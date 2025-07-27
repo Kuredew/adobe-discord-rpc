@@ -4,6 +4,8 @@ const apiUrl = 'https://api.github.com/repos/Kuredew/adobe-discord-rpc/releases/
 const csInterface = new CSInterface();
 
 const powerSwitchEvent = new CSEvent('com.kureichi.rpc.power-switch', 'APPLICATION');
+const getPowerSwitchInfoEvent = new CSEvent('com.kureichi.rpc.get-power-switch-info', 'APPLICATION');
+
 const readyEvent = new CSEvent('com.kureichi.rpc.ready', 'APPLICATION');
 const getConnectionInfoEvent = new CSEvent('com.kureichi.rpc.get-connection-info', 'APPLICATION');
 
@@ -41,24 +43,34 @@ async function checkLatestVersion() {
 function stateConnectedSwitch() {
     connectionInfo.innerHTML = 'Connected!'
     connectionInfo.style.color = 'green';
-    powerSwitchButton.innerHTML = 'Disconnect';
+    //powerSwitchButton.innerHTML = 'Disconnect';
 
     loader.style.opacity = '0%';
     state.connected = true
 }
 
 function stateConnectingSwitch() {
-    powerSwitchButton.innerHTML = 'Connecting';
+    //powerSwitchButton.innerHTML = 'Connecting';
     loader.style.opacity = '80%';
 }
 
 function stateDisconnectedSwitch() {
     connectionInfo.innerHTML = 'Disconnected';
     connectionInfo.style.color = 'brown';
-    powerSwitchButton.innerHTML = 'Connect';
+    //powerSwitchButton.innerHTML = 'Connect';
 
     loader.style.opacity = '0%';
     state.connected = false;
+}
+
+function powerSwitchOn() {
+    powerSwitchButton.innerHTML = 'On';
+    powerSwitchButton.style.borderColor = 'green';
+}
+
+function powerSwitchOff() {
+    powerSwitchButton.innerHTML = 'Off';
+    powerSwitchButton.style.borderColor = 'red';
 }
 
 csInterface.addEventListener('com.kureichi.rpc.connecting-state', () => {
@@ -73,6 +85,16 @@ csInterface.addEventListener('com.kureichi.rpc.disconnected-state', () => {
     stateDisconnectedSwitch();
 })
 
+csInterface.addEventListener('com.kureichi.rpc.power-switch-on', () => {
+    console.log('Power Switch Is On');
+    powerSwitchOn();
+})
+
+csInterface.addEventListener('com.kureichi.rpc.power-switch-off', () => {
+    console.log('Power Switch Is Off');
+    powerSwitchOff();
+})
+
 powerSwitchButton.addEventListener('click', () => {
     csInterface.dispatchEvent(powerSwitchEvent);
 })
@@ -82,7 +104,13 @@ versionInfo.addEventListener('click', () => {
 })
 
 function getConnectionInfo() {
+    console.log('Getting Connection Info...');
     csInterface.dispatchEvent(getConnectionInfoEvent);
+}
+
+function getPowerSwitchInfo() {
+    console.log('Getting Power Switch Info...');
+    csInterface.dispatchEvent(getPowerSwitchInfoEvent);
 }
 
 // Call Extension
@@ -90,6 +118,7 @@ window.onload = function() {
     //powerSwitchButton.click();
     csInterface.dispatchEvent(readyEvent);
     checkLatestVersion();
-    // me while trying to fixing race condition
+    
     setTimeout(getConnectionInfo, 3000);
+    setTimeout(getPowerSwitchInfo, 4000);
 }

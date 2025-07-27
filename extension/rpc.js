@@ -6,6 +6,9 @@ const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v175101
 const connectingStateEvent = new CSEvent('com.kureichi.rpc.connecting-state', 'APPLICATION');
 const connectedStateEvent = new CSEvent('com.kureichi.rpc.connected-state', 'APPLICATION');
 const disconnectedStateEvent = new CSEvent('com.kureichi.rpc.disconnected-state', 'APPLICATION');
+
+const powerSwitchOnEvent = new CSEvent('com.kureichi.rpc.power-switch-on', 'APPLICATION');
+const powerSwitchOffEvent = new CSEvent('com.kureichi.rpc.power-switch-off', 'APPLICATION');
 //const clientId = '1387049921982501055';
 
 const csInterface = new CSInterface();
@@ -160,19 +163,35 @@ function updateState(stateProps, func) {
     })
 }
 
+function updatePowerSwitchInfo() {
+    if (state.power == 'off') {
+        csInterface.dispatchEvent(powerSwitchOffEvent);
+    } else if (state.power == 'on') {
+        csInterface.dispatchEvent(powerSwitchOnEvent);
+    }
+}
+
 csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
     if (state.power == 'off') {
         state.power = 'on';
 
         login();
-    } else {
+    } else if (state.power == 'on') {
         state.power = 'off';
 
-        destroy();
+        if (state.connected) {
+            destroy();
+        }
     }
+
+    updatePowerSwitchInfo();
 })
 
 // hellnah
+csInterface.addEventListener('com.kureichi.rpc.get-power-switch-info', () => {
+    updatePowerSwitchInfo();
+})
+
 csInterface.addEventListener('com.kureichi.rpc.get-connection-info', () => {
     if (state.connected) {
         stateConnectedSwitch();
