@@ -95,6 +95,18 @@ csInterface.addEventListener('com.kureichi.rpc.power-switch-off', () => {
     powerSwitchOff();
 })
 
+csInterface.addEventListener('com.kureichi.rpc.power-switch-info', (e) => {
+    const power = e.data
+    
+    if (power == "on") {
+        console.log('Power Switch Is On');
+        powerSwitchOn();
+    } else if (power == "off") {
+        console.log('Power Switch Is Off');
+        powerSwitchOff();
+    }
+})
+
 powerSwitchButton.addEventListener('click', () => {
     csInterface.dispatchEvent(powerSwitchEvent);
 })
@@ -119,6 +131,8 @@ window.onload = function() {
     csInterface.dispatchEvent(readyEvent);
     checkLatestVersion();
     
-    setTimeout(getConnectionInfo, 3000);
-    setTimeout(getPowerSwitchInfo, 4000);
+    getConnectionInfo();
+    getPowerSwitchInfo();
+    //setTimeout(getConnectionInfo, 3000);
+    //setTimeout(getPowerSwitchInfo, 4000);
 }

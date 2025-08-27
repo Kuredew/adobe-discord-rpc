@@ -7,8 +7,9 @@ const connectingStateEvent = new CSEvent('com.kureichi.rpc.connecting-state', 'A
 const connectedStateEvent = new CSEvent('com.kureichi.rpc.connected-state', 'APPLICATION');
 const disconnectedStateEvent = new CSEvent('com.kureichi.rpc.disconnected-state', 'APPLICATION');
 
-const powerSwitchOnEvent = new CSEvent('com.kureichi.rpc.power-switch-on', 'APPLICATION');
-const powerSwitchOffEvent = new CSEvent('com.kureichi.rpc.power-switch-off', 'APPLICATION');
+//const powerSwitchOnEvent = new CSEvent('com.kureichi.rpc.power-switch-on', 'APPLICATION');
+//const powerSwitchOffEvent = new CSEvent('com.kureichi.rpc.power-switch-off', 'APPLICATION');
+const powerSwitchInfoEvent = new CSEvent('com.kureichi.rpc.power-switch-info', 'APPLICATION');
 //const clientId = '1387049921982501055';
 
 const csInterface = new CSInterface();
@@ -163,12 +164,15 @@ function updateState(stateProps, func) {
     })
 }
 
-function updatePowerSwitchInfo() {
+function sendPowerSwitchInfo() {
+    powerSwitchInfoEvent.data = state.power
+    csInterface.dispatchEvent(powerSwitchInfoEvent)
+    /*
     if (state.power == 'off') {
         csInterface.dispatchEvent(powerSwitchOffEvent);
     } else if (state.power == 'on') {
         csInterface.dispatchEvent(powerSwitchOnEvent);
-    }
+    }*/
 }
 
 csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
@@ -184,12 +188,11 @@ csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
         }
     }
 
-    updatePowerSwitchInfo();
+    sendPowerSwitchInfo();
 })
 
-// hellnah
 csInterface.addEventListener('com.kureichi.rpc.get-power-switch-info', () => {
-    updatePowerSwitchInfo();
+    sendPowerSwitchInfo();
 })
 
 csInterface.addEventListener('com.kureichi.rpc.get-connection-info', () => {
