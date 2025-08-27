@@ -21,8 +21,8 @@ const appClientId = client[appCode].id;
 const appImg = client[appCode].img;
 //const { clientId } = require('./clientId');
 
-let rpc
-let interval
+let rpc;
+let interval;
 
 const state = {
         power: 'on',
@@ -70,14 +70,14 @@ function login() {
             rpc.destroy();
 
             stateDisconnectedSwitch();
-
-            if (state.power == 'on') {
-                console.log('RPC:: Reconnecting in 5s...');
-                setTimeout(login, 5000);
-            }
-
+            
             console.log('RPC:: Interval stopped.');
             clearInterval(interval);
+            
+            if (state.power == 'on') {
+                console.log('RPC:: Reconnecting in 10s...');
+                setTimeout(login, 10000);
+            }
         })
 
         rpc.login({
@@ -87,14 +87,14 @@ function login() {
             
             stateDisconnectedSwitch();
 
-            // Reconnect if error
-            if (state.power == 'on') {
-                console.log('RPC:: Reconnecting in 5s...');
-                setTimeout(login, 5000);
-            }
-
             console.log('RPC:: Interval stopped.');
             clearInterval(interval);
+
+            // Reconnect if error
+            if (state.power == 'on') {
+                console.log('RPC:: Reconnecting in 10s...');
+                setTimeout(login, 10000);
+            }
             // if discord stop responding to rpc, you must restart discord.
             //stateHTML.innerHTML = 'Please restart your Discord.';
         })
