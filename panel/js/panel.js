@@ -73,26 +73,19 @@ function powerSwitchOff() {
     powerSwitchButton.style.borderColor = 'red';
 }
 
-csInterface.addEventListener('com.kureichi.rpc.connecting-state', () => {
-    stateConnectingSwitch();
-})
 
-csInterface.addEventListener('com.kureichi.rpc.connected-state', () => {
-    stateConnectedSwitch();
-})
+csInterface.addEventListener('com.kureichi.rpc.connection-info', (e) => {
+    const info = e.data
 
-csInterface.addEventListener('com.kureichi.rpc.disconnected-state', () => {
-    stateDisconnectedSwitch();
-})
+    if (info == "connected") {
+        stateConnectedSwitch();
+        return
 
-csInterface.addEventListener('com.kureichi.rpc.power-switch-on', () => {
-    console.log('Power Switch Is On');
-    powerSwitchOn();
-})
-
-csInterface.addEventListener('com.kureichi.rpc.power-switch-off', () => {
-    console.log('Power Switch Is Off');
-    powerSwitchOff();
+    } else if (info == "connecting") {
+        stateConnectingSwitch();
+    } else if (info == "disconnected") {
+        stateDisconnectedSwitch();
+    }
 })
 
 csInterface.addEventListener('com.kureichi.rpc.power-switch-info', (e) => {

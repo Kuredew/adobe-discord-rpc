@@ -3,9 +3,10 @@
 
 const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png';
 
-const connectingStateEvent = new CSEvent('com.kureichi.rpc.connecting-state', 'APPLICATION');
-const connectedStateEvent = new CSEvent('com.kureichi.rpc.connected-state', 'APPLICATION');
-const disconnectedStateEvent = new CSEvent('com.kureichi.rpc.disconnected-state', 'APPLICATION');
+//const connectingStateEvent = new CSEvent('com.kureichi.rpc.connecting-state', 'APPLICATION');
+//const connectedStateEvent = new CSEvent('com.kureichi.rpc.connected-state', 'APPLICATION');
+//const disconnectedStateEvent = new CSEvent('com.kureichi.rpc.disconnected-state', 'APPLICATION');
+const connectionInfo = new CSEvent('com.kureichi.rpc.connection-info', 'APPLICATION')
 
 //const powerSwitchOnEvent = new CSEvent('com.kureichi.rpc.power-switch-on', 'APPLICATION');
 //const powerSwitchOffEvent = new CSEvent('com.kureichi.rpc.power-switch-off', 'APPLICATION');
@@ -27,34 +28,25 @@ let interval;
 
 const state = {
         power: 'on',
-        connected: false,
+        connection: "disconnected",
         details: '',
         state: '-'
     }
 
-function stateConnectedSwitch() {
-    csInterface.dispatchEvent(connectedStateEvent);
-    state.connected = true;
-}
-
-function stateConnectingSwitch() {
-    csInterface.dispatchEvent(connectingStateEvent);
-}
-
-function stateDisconnectedSwitch() {
-    csInterface.dispatchEvent(disconnectedStateEvent);
-    state.connected = false;
+function changeAndSendConnectionInfo(info) {
+    state.connection = info
+    connectionInfo.data = info
+    csInterface.dispatchEvent(connectionInfo);
 }
 
 function login() {
-    stateConnectingSwitch();
-    
-
-    if (!state.connected) {
+    if (state.connection == "disconnected") {
         // WHY? for some reason rpc can't appear when logging in again after destroying, do you know something?
         // yeah so i created a new instance to clean it up, but another problem came up, 
         // if you disconnect and connect too fast, discord will stop responding to rpc
         rpc = new RPC.Client({ transport: 'ipc' });
+        changeAndSendConnectionInfo("connecting");
+
 
         rpc.on('ready', () => {
             console.log('RPC:: Discord RPC has Connected guys!');
@@ -62,19 +54,19 @@ function login() {
             console.log('RPC:: Interval started.');
             interval = setInterval(main, 1000);
             
-            stateConnectedSwitch();
-            updateActivity();
+            changeAndSendConnectionInfo("connected");
         })
 
         rpc.on('disconnected', () => {
             console.log('RPC:: Discord RPC is Disconnected!');
             rpc.destroy();
 
-            stateDisconnectedSwitch();
+            changeAndSendConnectionInfo("disconnected");
             
             console.log('RPC:: Interval stopped.');
             clearInterval(interval);
             
+            // only reconnect if power is on
             if (state.power == 'on') {
                 console.log('RPC:: Reconnecting in 10s...');
                 setTimeout(login, 10000);
@@ -86,7 +78,7 @@ function login() {
         }).catch((e) => {
             console.log(`RPC:: Error : ${e}`);
             
-            stateDisconnectedSwitch();
+            changeAndSendConnectionInfo("disconnected");
 
             console.log('RPC:: Interval stopped.');
             clearInterval(interval);
@@ -102,7 +94,7 @@ function login() {
     } else {
         updateActivity();
 
-        stateConnectedSwitch();
+        changeAndSendConnectionInfo("connected");
     }
 }
 
@@ -126,7 +118,7 @@ function updateActivity() {
 }
 
 function main() {
-    if (state.connected) {
+    if (state.connection == "connected") {
 
         // I dont use getInfo() function anymore.
         /*
@@ -183,7 +175,7 @@ csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
     } else if (state.power == 'on') {
         state.power = 'off';
 
-        if (state.connected) {
+        if (state.connection == "connected") {
             destroy();
         }
     }
@@ -196,11 +188,7 @@ csInterface.addEventListener('com.kureichi.rpc.get-power-switch-info', () => {
 })
 
 csInterface.addEventListener('com.kureichi.rpc.get-connection-info', () => {
-    if (state.connected) {
-        stateConnectedSwitch();
-    } else {
-        stateDisconnectedSwitch();
-    }
+    changeAndSendConnectionInfo(state.connection);
 })
 
 
