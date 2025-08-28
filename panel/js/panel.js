@@ -40,24 +40,21 @@ async function checkLatestVersion() {
 }
 
 
-function stateConnectedSwitch() {
+function connected() {
     connectionInfo.innerHTML = 'Connected!'
     connectionInfo.style.color = 'green';
-    //powerSwitchButton.innerHTML = 'Disconnect';
 
     loader.style.opacity = '0%';
     state.connected = true
 }
 
-function stateConnectingSwitch() {
-    //powerSwitchButton.innerHTML = 'Connecting';
+function connecting() {
     loader.style.opacity = '80%';
 }
 
-function stateDisconnectedSwitch() {
+function disconnected() {
     connectionInfo.innerHTML = 'Disconnected';
     connectionInfo.style.color = 'brown';
-    //powerSwitchButton.innerHTML = 'Connect';
 
     loader.style.opacity = '0%';
     state.connected = false;
@@ -78,13 +75,13 @@ csInterface.addEventListener('com.kureichi.rpc.connection-info', (e) => {
     const info = e.data
 
     if (info == "connected") {
-        stateConnectedSwitch();
+        connected();
         return
 
     } else if (info == "connecting") {
-        stateConnectingSwitch();
+        connecting();
     } else if (info == "disconnected") {
-        stateDisconnectedSwitch();
+        disconnected();
     }
 })
 
@@ -108,24 +105,13 @@ versionInfo.addEventListener('click', () => {
     csInterface.openURLInDefaultBrowser('https://github.com/Kuredew/adobe-discord-rpc/releases/latest');
 })
 
-function getConnectionInfo() {
-    console.log('Getting Connection Info...');
-    csInterface.dispatchEvent(getConnectionInfoEvent);
-}
-
-function getPowerSwitchInfo() {
-    console.log('Getting Power Switch Info...');
-    csInterface.dispatchEvent(getPowerSwitchInfoEvent);
-}
-
 // Call Extension
 window.onload = function() {
     //powerSwitchButton.click();
     csInterface.dispatchEvent(readyEvent);
     checkLatestVersion();
     
-    getConnectionInfo();
-    getPowerSwitchInfo();
-    //setTimeout(getConnectionInfo, 3000);
-    //setTimeout(getPowerSwitchInfo, 4000);
+    console.log('WINDOW:: Updating info...')
+    csInterface.dispatchEvent(getConnectionInfoEvent);
+    csInterface.dispatchEvent(getPowerSwitchInfoEvent);
 }
