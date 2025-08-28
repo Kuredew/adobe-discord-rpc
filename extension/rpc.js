@@ -145,6 +145,8 @@ csInterface.addEventListener('com.kureichi.rpc.power-switch', () => {
         dispatchEvent('power', 'off', powerSwitchInfoEvent);
         destroy();
     }
+
+    localStorage.setItem('power', state.power);
 })
 
 
@@ -158,5 +160,18 @@ csInterface.addEventListener('com.kureichi.rpc.get-connection-info', () => {
 
 
 window.onload = function() {
-    login();
+    const power = localStorage.getItem('power');
+    if (['on', 'off'].includes(power)) {
+        console.log(`LOAD:: Detected power (${power}) session in localStorage, changing state...`)
+        state.power = power;
+    }
+
+    // Start RPC if power on only
+    if (state.power == 'on') {
+        console.log('LOAD:: Power is ON, Logged in...')
+        login();
+        return;
+    }
+
+    console.log('LOAD:: Power is OFF, not trying to login.')
 }
