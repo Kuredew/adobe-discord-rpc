@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord RPC</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="panel">
+        <div class="header">
+            <h1>Discord RPC</h1>
+            <p class="version" id="version">Checking Version...</p>
+        </div>
+
+        <div class="status-section">
+            <div class="status-indicator">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="state" class="state">-</span>
+            </div>
+            <button id="button">Please Wait</button>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="options-container">
+            <div class="option-item">
+                <label class="toggle-label">
+                    <span>Show Details</span>
+                    <input type="checkbox" id="toggle-details" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="option-item">
+                <label class="toggle-label">
+                    <span>Show State</span>
+                    <input type="checkbox" id="toggle-state" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
+            <p class="contributor">contributions by <a href="https://github.com/omaralhami" class="contributor-name">mar</a></p>
+        </div>
+    </div>
+    <script src="../libs/CSInterface.js"></script>
+    <script src="./js/panel.js"></script>
+</body>
+</html>
