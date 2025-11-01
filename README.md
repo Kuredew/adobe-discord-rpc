@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Build%20with-Native%20js-yellow?style=for-the-badge">
     <br />
     <br />
-    <img src="https://github.com/user-attachments/assets/3a434c51-012b-4d59-9085-d3142a520e28">
+    <img src="https://i.ibb.co/vNm9MrJ/panel.png">
 </div>
 
 
@@ -27,7 +27,7 @@ Support for
 
 
 ## Preview
-![Gambar WhatsApp 2025-06-27 pukul 15 58 35_fc123bd8](https://github.com/user-attachments/assets/6adaad16-f388-4db0-8835-93320d408d1d) ![Screenshot 2025-06-30 152835](https://res.cloudinary.com/ddsuizdgf/image/upload/v1751272350/Screenshot_2025-06-30_152835_ame70m.jpg)
+   <img src="https://i.ibb.co/WWgRmhSb/rpc.png">
 
 ## How To Install ?
 
