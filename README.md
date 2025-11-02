@@ -13,6 +13,8 @@
     <img src="https://i.ibb.co/vNm9MrJ/panel.png">
 </div>
 
+> [!NOTE]
+> We have released a [v2.3.0-beta.1](https://github.com/Kuredew/adobe-discord-rpc/releases/tag/v2.3.0-beta.1) version for the New UI (see image above),
 
 ## About
 This project is inspired by tee ([adobe-discord-rpc](https://github.com/teeteeteeteetee/adobe-discord-rpc)), I tried to make my own extension with less features and possibly cleaner code so it is lighter and easier to maintain.
