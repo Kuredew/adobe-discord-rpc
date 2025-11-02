@@ -8,12 +8,42 @@
 </head>
 <body>
     <div class="panel">
-        <h1>Adobe Discord Rich Presence</h1>
-        <p class="developer">made with love by <a href="https://github.com/Kuredew">Kureichi↗</a></p>
-        <p id="version" class="version">Checking Version...</p>
-        <p id="state" class="state">-</p>
-        <button id="button">Please Wait</button>
-        <span id="loader" class="loader"></span>
+        <div class="header">
+            <h1>Discord RPC</h1>
+            <p class="version" id="version">Checking Version...</p>
+        </div>
+
+        <div class="status-section">
+            <div class="status-indicator">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="state" class="state">-</span>
+            </div>
+            <button id="button">Please Wait</button>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="options-container">
+            <div class="option-item">
+                <label class="toggle-label">
+                    <span>Show Details</span>
+                    <input type="checkbox" id="toggle-details" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="option-item">
+                <label class="toggle-label">
+                    <span>Show State</span>
+                    <input type="checkbox" id="toggle-state" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
+            <p class="contributor">contributions by <a href="https://github.com/omaralhami" class="contributor-name">mar</a></p>
+        </div>
     </div>
     <script src="../libs/CSInterface.js"></script>
     <script src="./js/panel.js"></script>

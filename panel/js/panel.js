@@ -1,4 +1,4 @@
-const PanelVersion = 'v2.2.0';
+const PanelVersion = 'v2.3.0';
 const apiUrl = 'https://api.github.com/repos/Kuredew/adobe-discord-rpc/releases/latest';
 
 const csInterface = new CSInterface();
@@ -9,10 +9,22 @@ const getPowerSwitchInfoEvent = new CSEvent('com.kureichi.rpc.get-power-switch-i
 const readyEvent = new CSEvent('com.kureichi.rpc.ready', 'APPLICATION');
 const getConnectionInfoEvent = new CSEvent('com.kureichi.rpc.get-connection-info', 'APPLICATION');
 
+const toggleDetailsEvent = new CSEvent('com.kureichi.rpc.toggle-details', 'APPLICATION');
+const toggleStateEvent = new CSEvent('com.kureichi.rpc.toggle-state', 'APPLICATION');
+const getToggleDetailsInfoEvent = new CSEvent('com.kureichi.rpc.get-toggle-details-info', 'APPLICATION');
+const getToggleStateInfoEvent = new CSEvent('com.kureichi.rpc.get-toggle-state-info', 'APPLICATION');
+
 const versionInfo = document.getElementById('version');
 const powerSwitchButton = document.getElementById('button');
 const connectionInfo = document.getElementById('state');
-const loader = document.getElementById('loader');
+const statusIndicator = document.querySelector('.status-indicator');
+const toggleDetails = document.getElementById('toggle-details');
+const toggleState = document.getElementById('toggle-state');
+
+// Local state for panel UI
+const panelState = {
+    connected: false
+};
 
 async function checkLatestVersion() {
     try {
@@ -30,44 +42,41 @@ async function checkLatestVersion() {
         } else {
             console.log('Panel:: Response not ok, retrying...');
 
-            setTimeout(3000, checkLatestVersion());
+            setTimeout(checkLatestVersion, 3000);
         }
     } catch (e) {
         console.log('Panel:: Error while trying to fetch api, ' + e);
         
-        setTimeout(5000, checkLatestVersion());
+        setTimeout(checkLatestVersion, 5000);
     }
 }
 
 
 function connected() {
-    connectionInfo.innerHTML = 'Connected!'
-    connectionInfo.style.color = 'green';
-
-    loader.style.opacity = '0%';
-    state.connected = true
+    connectionInfo.innerHTML = 'Connected';
+    statusIndicator.className = 'status-indicator connected';
+    panelState.connected = true;
 }
 
 function connecting() {
-    loader.style.opacity = '80%';
+    connectionInfo.innerHTML = 'Connecting...';
+    statusIndicator.className = 'status-indicator connecting';
 }
 
 function disconnected() {
     connectionInfo.innerHTML = 'Disconnected';
-    connectionInfo.style.color = 'brown';
-
-    loader.style.opacity = '0%';
-    state.connected = false;
+    statusIndicator.className = 'status-indicator disconnected';
+    panelState.connected = false;
 }
 
 function powerSwitchOn() {
     powerSwitchButton.innerHTML = 'On';
-    powerSwitchButton.style.borderColor = 'green';
+    powerSwitchButton.className = 'power-on';
 }
 
 function powerSwitchOff() {
     powerSwitchButton.innerHTML = 'Off';
-    powerSwitchButton.style.borderColor = 'red';
+    powerSwitchButton.className = 'power-off';
 }
 
 
@@ -105,13 +114,67 @@ versionInfo.addEventListener('click', () => {
     csInterface.openURLInDefaultBrowser('https://github.com/Kuredew/adobe-discord-rpc/releases/latest');
 })
 
+// Toggle event handlers
+toggleDetails.addEventListener('change', (e) => {
+    const enabled = e.target.checked ? 'on' : 'off';
+    toggleDetailsEvent.data = enabled;
+    // Save immediately for quick feedback
+    localStorage.setItem('showDetails', enabled);
+    // Dispatch event to background extension
+    csInterface.dispatchEvent(toggleDetailsEvent);
+    console.log(`Panel:: Details toggle set to ${enabled} - updating RPC immediately`);
+})
+
+toggleState.addEventListener('change', (e) => {
+    const enabled = e.target.checked ? 'on' : 'off';
+    toggleStateEvent.data = enabled;
+    // Save immediately for quick feedback
+    localStorage.setItem('showState', enabled);
+    // Dispatch event to background extension
+    csInterface.dispatchEvent(toggleStateEvent);
+    console.log(`Panel:: State toggle set to ${enabled} - updating RPC immediately`);
+})
+
+// Listen for toggle info updates from extension
+csInterface.addEventListener('com.kureichi.rpc.toggle-details-info', (e) => {
+    const enabled = e.data === 'on';
+    toggleDetails.checked = enabled;
+})
+
+csInterface.addEventListener('com.kureichi.rpc.toggle-state-info', (e) => {
+    const enabled = e.data === 'on';
+    toggleState.checked = enabled;
+})
+
 // Call Extension
 window.onload = function() {
     //powerSwitchButton.click();
     csInterface.dispatchEvent(readyEvent);
     checkLatestVersion();
     
-    console.log('WINDOW:: Updating info...')
-    csInterface.dispatchEvent(getConnectionInfoEvent);
-    csInterface.dispatchEvent(getPowerSwitchInfoEvent);
+    // Wait for background extension to load after ready event
+    // Background extensions start when readyEvent is dispatched
+    setTimeout(() => {
+        // Load saved toggle preferences
+        const showDetails = localStorage.getItem('showDetails');
+        const showState = localStorage.getItem('showState');
+        
+        if (showDetails) {
+            toggleDetails.checked = showDetails === 'on';
+            toggleDetailsEvent.data = showDetails;
+            csInterface.dispatchEvent(toggleDetailsEvent);
+        }
+        
+        if (showState) {
+            toggleState.checked = showState === 'on';
+            toggleStateEvent.data = showState;
+            csInterface.dispatchEvent(toggleStateEvent);
+        }
+        
+        console.log('WINDOW:: Updating info...')
+        csInterface.dispatchEvent(getConnectionInfoEvent);
+        csInterface.dispatchEvent(getPowerSwitchInfoEvent);
+        csInterface.dispatchEvent(getToggleDetailsInfoEvent);
+        csInterface.dispatchEvent(getToggleStateInfoEvent);
+    }, 1000); // Wait for background extension to initialize
 }
