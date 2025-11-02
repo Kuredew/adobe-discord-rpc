@@ -1,4 +1,4 @@
-const PanelVersion = 'v2.3.0';
+const PanelVersion = 'v2.3.0-beta.1';
 const apiUrl = 'https://api.github.com/repos/Kuredew/adobe-discord-rpc/releases/latest';
 
 const csInterface = new CSInterface();
