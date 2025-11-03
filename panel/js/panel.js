@@ -20,6 +20,8 @@ const connectionInfo = document.getElementById('state');
 const statusIndicator = document.querySelector('.status-indicator');
 const toggleDetails = document.getElementById('toggle-details');
 const toggleState = document.getElementById('toggle-state');
+const moreButton = document.getElementById('more-button');
+const moreContainer = document.getElementById('more-container');
 
 // Local state for panel UI
 const panelState = {
@@ -133,6 +135,10 @@ toggleState.addEventListener('change', (e) => {
     // Dispatch event to background extension
     csInterface.dispatchEvent(toggleStateEvent);
     console.log(`Panel:: State toggle set to ${enabled} - updating RPC immediately`);
+})
+
+moreButton.addEventListener('click', () => {
+    moreContainer.style.display = 'flex';
 })
 
 // Listen for toggle info updates from extension

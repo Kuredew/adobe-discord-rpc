@@ -249,8 +249,8 @@ body {
     text-align:  center;
     font-size: 12px;
     transition: 0.5s;
-    text-decoration: underline;
-    text-underline-offset: 4px;
+    /* text-decoration: underline; */
+    /* text-underline-offset: 4px; */
     width: fit-content;
 }
 
@@ -264,8 +264,8 @@ body {
     display: none;
     top: 0;
     left: 0;
-    width: 100dvw;
-    height: 100dvh;
+    width: 100vw;
+    height: 100vh;
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.2);
