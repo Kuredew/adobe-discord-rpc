@@ -222,6 +222,18 @@ body {
     transform: translateX(20px);
 }
 
+
+.more-section .more {
+    text-align:  center;
+    font-size: 12px;
+    transition: 0.5s;
+}
+
+.more-section .more:hover {
+    cursor: pointer;
+    opacity: 80%;
+}
+
 .footer {
     margin-top: 8px;
     text-align: center;
