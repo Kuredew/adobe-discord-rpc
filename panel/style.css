@@ -167,8 +167,25 @@ body {
 
 .option-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-item .toggle-input {
+    padding: 10px 15px;
+    outline: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    font-family: samsung-sharp-regular;
+    font-size: 12px;
+    color: white;
+    background: none;
+    transition: 0.5s;
+}
+
+.option-item .toggle-input:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .toggle-label {
@@ -222,17 +239,92 @@ body {
     transform: translateX(20px);
 }
 
+.more-section {
+    opacity: 50%;
+    display: flex;
+    justify-content: center;
+}
 
 .more-section .more {
     text-align:  center;
     font-size: 12px;
     transition: 0.5s;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    width: fit-content;
 }
 
 .more-section .more:hover {
     cursor: pointer;
     opacity: 80%;
 }
+
+.more-container {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100dvw;
+    height: 100dvh;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.more-container .window {
+    /* border: 1px solid white; */
+    box-shadow: inset 0 0 0 1px #333;
+    border-radius: 10px;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(30, 30, 34);
+    overflow: hidden;
+}
+
+.more-container .window .window-decoration {
+    display: flex;
+    padding: 10px 15px;
+    justify-content: space-between;
+    background-color: grey;
+}
+
+.more-container .window .window-decoration .title {
+    font-size: 12px;
+}
+
+.more-container .window .window-decoration .items {
+    display: flex;
+    gap: 4px;
+    justify-content: space-between;
+}
+
+.more-container .window .window-decoration .items .item {
+    width: 12px;
+    height: 12px;
+    border-radius: 100px;
+    transition: 0.5s;
+}
+
+.more-container .window .window-decoration .items .item:hover {
+    cursor: pointer;
+    opacity: 70%;
+}
+
+.more-container .window .window-decoration .items #min {
+    background-color: RGB(0, 202, 78);
+}
+.more-container .window .window-decoration .items #max {
+    background-color: RGB(255, 189, 68);
+}
+.more-container .window .window-decoration .items #close {
+    background-color: rgb(255, 96, 92);
+}
+
+.more-container .window .window-field {
+    padding: 15px;
+}
+
 
 .footer {
     margin-top: 8px;
