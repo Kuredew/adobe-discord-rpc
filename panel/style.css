@@ -300,9 +300,6 @@ body {
 }
 
 .more-container .window .window-decoration .items .item {
-    width: 12px;
-    height: 12px;
-    border-radius: 100px;
     transition: 0.5s;
 }
 
@@ -311,13 +308,22 @@ body {
     opacity: 70%;
 }
 
-.more-container .window .window-decoration .items #min {
+.min-window-decoration {
+    width: 12px;
+    height: 12px;
+    border-radius: 100px;
     background-color: RGB(0, 202, 78);
 }
-.more-container .window .window-decoration .items #max {
+.max-window-decoration {
+    width: 12px;
+    height: 12px;
+    border-radius: 100px;
     background-color: RGB(255, 189, 68);
 }
-.more-container .window .window-decoration .items #close {
+.close-window-decoration {
+    width: 12px;
+    height: 12px;
+    border-radius: 100px;
     background-color: rgb(255, 96, 92);
 }
 
