@@ -1,14 +1,14 @@
 @font-face {
     font-family: samsung-sharp-bold;
-    src: url('./font/SamsungSharpSans-Bold.otf');
+    src: url('../font/SamsungSharpSans-Bold.otf');
 }
 @font-face {
     font-family: samsung-sharp-medium;
-    src: url('./font/SamsungSharpSans-Medium.otf');
+    src: url('../font/SamsungSharpSans-Medium.otf');
 }
 @font-face {
     font-family: samsung-sharp-regular;
-    src: url('./font/SamsungSharpSans-Regular.otf');
+    src: url('../font/SamsungSharpSans-Regular.otf');
 }
 
 * {
