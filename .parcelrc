@@ -1,7 +1,0 @@
-{
-  "extends": "@parcel/config-default",
-  "reporters": [
-    "@parcel/reporter-cli",
-    "./parcel-plugins/parcel-reporter-remove-type-module.js"
-  ]
-}

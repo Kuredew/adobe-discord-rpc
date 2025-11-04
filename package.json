@@ -1,12 +1,11 @@
 {
   "name": "ae-rpc",
+  "type": "module",
   "version": "1.0.0",
   "description": "Discord Rich Presence for AE made by Kureichi",
   "scripts": {
-    "copy": "shx mkdir -p dist/ && shx cp -r CSXS/ dist/CSXS && shx cp -r jsx/ dist/ && shx cp .debug dist/.debug",
-
-    "build": "pnpm run copy && parcel build ./panel/index.html ./extension/index.html --no-source-maps --public-url ../ --dist-dir ./dist",
-    "dev": "pnpm run copy && parcel serve ./panel/index.html ./extension/index.html --no-source-maps --public-url ../ --dist-dir ./dist"
+    "dev": "node ./scripts/development.js",
+    "build": "node ./scripts/production.js"
   },
   "author": "Kureichi",
   "contributors": [
