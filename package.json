@@ -4,10 +4,9 @@
   "description": "Discord Rich Presence for AE made by Kureichi",
   "scripts": {
     "copy": "shx mkdir -p dist/ && shx cp -r CSXS/ dist/CSXS && shx cp -r jsx/ dist/ && shx cp .debug dist/.debug",
-    "build:extension": "parcel build ./extension/index.html --dist-dir ./dist/extension --no-source-maps --public-url ./",
-    "build:panel": "parcel build ./panel/index.html --dist-dir ./dist/panel --no-source-maps --public-url ./",
 
-    "build": "pnpm run copy && pnpm run build:extension && pnpm run build:panel"
+    "build": "pnpm run copy && parcel build ./panel/index.html ./extension/index.html --no-source-maps --public-url ../ --dist-dir ./dist",
+    "dev": "pnpm run copy && parcel serve ./panel/index.html ./extension/index.html --no-source-maps --public-url ../ --dist-dir ./dist"
   },
   "author": "Kureichi",
   "contributors": [
