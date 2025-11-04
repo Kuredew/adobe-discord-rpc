@@ -1,4 +1,5 @@
 // Kureichi 2025
+import { client } from './client.js';
 
 const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png';
 

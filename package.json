@@ -2,16 +2,25 @@
   "name": "ae-rpc",
   "version": "1.0.0",
   "description": "Discord Rich Presence for AE made by Kureichi",
-  "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "build:panel": "parcel build ./panel/index.html --no-source-maps --dist-dir ./dist/panel --public-url ./",
+    "build:extension": "parcel build ./extension/index.html --no-source-maps --dist-dir ./dist/extension --public-url ./",
+    "build": "pnpm run build:panel && pnpm run build:extension"
   },
   "author": "Kureichi",
   "contributors": [
     "mar <https://github.com/omaralhami>"
   ],
   "license": "ISC",
+  "packageManager": "pnpm@10.19.0",
   "dependencies": {
     "discord-rpc": "^4.0.1"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "parcel": "^2.16.0",
+    "process": "^0.11.10",
+    "timers-browserify": "^2.0.12"
   }
 }
