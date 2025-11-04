@@ -1,0 +1,12 @@
+
+# Ignore npm module
+node_modules
+
+# Ignore bundled extensions
+dist
+
+# Ignore parcel-cache
+.parcel-cache
+
+# Ignore Build Script
+build-scripts

@@ -21,4 +21,4 @@ const client = {
     }
 }
 
-//export { clientId }
+export { client }
