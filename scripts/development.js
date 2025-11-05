@@ -2,7 +2,7 @@ import chokidar from 'chokidar';
 import build from './utils/build.js';
 import createSymlink from './utils/createSymlink.js';
 
-const watcher = chokidar.watch(['./panel', './extension'], { ignoreInitial: true })
+const watcher = chokidar.watch(['./src'], { ignoreInitial: true })
 
 let building = true
 function main() {
