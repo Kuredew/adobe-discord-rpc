@@ -7,6 +7,14 @@
     "dev": "node ./scripts/development.js",
     "build": "node ./scripts/production.js"
   },
+  "targets": {
+    "main": {
+      "context": "node",
+      "includeNodeModules": {
+        "discord-rpc": false
+      }
+    }
+  },
   "author": "Kureichi",
   "contributors": [
     "mar <https://github.com/omaralhami>"

@@ -1,5 +1,6 @@
 // Kureichi 2025
 import { client } from './client.js';
+import RPC from 'discord-rpc';
 
 const smallImageURL = 'https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png';
 
@@ -9,7 +10,6 @@ const toggleDetailsInfoEvent = new CSEvent('com.kureichi.rpc.toggle-details-info
 const toggleStateInfoEvent = new CSEvent('com.kureichi.rpc.toggle-state-info', 'APPLICATION');
 
 const csInterface = new CSInterface();
-const RPC = require('discord-rpc');
 const startTimestamp = new Date();
 
 // Get application ID and validate it
