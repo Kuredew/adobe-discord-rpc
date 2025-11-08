@@ -136,7 +136,7 @@ class AdobeRPC {
             startTimestamp: this.startTimestamp,
             largeImageKey: this.adobeApp.appImg,
             largeImageText: this.adobeApp.appName,
-            smallImageKey: this.adobeApp.smallImageURL,
+            smallImageKey: "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png",
         }
 
         if (this.stateManager.rpcDetails && this.stateManager.showDetails) {
