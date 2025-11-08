@@ -1,6 +1,6 @@
 class StateManager {
     constructor(localStorage) {
-        // localStorage.clear()
+        localStorage.clear()
         this.localStorage = localStorage
         this.rawData = this.localStorage.getItem('data');
 
@@ -14,6 +14,8 @@ class StateManager {
                 this.init()
             }
         }
+
+        this.versionInfo = this.data.versionInfo
 
         this.power = this.data.power
         this.rpcConnection = "disconnected"
@@ -36,6 +38,8 @@ class StateManager {
     init() {
         console.log('[StateManager:init] Initializing...')
         this.data = {
+            versionInfo: null,
+
             power: false,
             rpcConnection: "disconnected",
             rpcDetails: null,
@@ -56,6 +60,8 @@ class StateManager {
     toObj() {
         // console.log('[StateManager:toObj] Convert State to Object')
         return {
+            versionInfo: this.versionInfo,
+
             power: this.power,
             rpcConnection: this.rpcConnection,
             rpcDetails: this.rpcDetails,
@@ -81,6 +87,7 @@ class StateManager {
     updateFromObj(obj) {
         try {
             console.log('[StateManager:updateFromObj] Processing update from Object data')
+            this.versionInfo = obj.versionInfo
 
             this.power = obj.power
             this.rpcConnection = obj.rpcConnection

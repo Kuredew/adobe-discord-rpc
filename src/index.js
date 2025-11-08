@@ -1,10 +1,11 @@
 import AdobeRPC from "./services/adobe/adobeRPC"
 import StateEvent from "./services/event/stateEvent"
 import StateManager from "./model/stateManager"
+import VersionCheck from "./services/github/versionCheck"
 // import versionCheckService from "./services/versionCheckService"
 
 function main() {
-    const csInterface = new CSInterface()
+    const versionCheck = new VersionCheck()
 
     const stateManager = new StateManager(localStorage)
     const rpc = new AdobeRPC(stateManager)
@@ -14,8 +15,14 @@ function main() {
         rpc.reload()
     ])
 
-    rpc.login(() => stateEvent.dispatchEvent())
+    versionCheck.check((string) => {
+        console.log('[MAIN] Checked version : ' + string)
 
+        stateManager.versionInfo = string
+        stateEvent.dispatchEvent()
+    })
+
+    rpc.login(() => stateEvent.dispatchEvent())
     // versionCheckService(
     //     'https://api.github.com/repos/Kureichi/adobe-discord-rpc/releases/latest',
     //     csInterface.getSystemPath(SystemPath.EXTENSION) + '/version.txt', () => {

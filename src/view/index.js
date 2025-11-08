@@ -1,8 +1,5 @@
 import StateManager from '../model/stateManager'
 
-const PanelVersion = 'v2.3.0-beta.1';
-const apiUrl = 'https://api.github.com/repos/Kuredew/adobe-discord-rpc/releases/latest';
-
 const csInterface = new CSInterface();
 
 const getStateEvent = new CSEvent('com.kureichi.rpc.get-state', 'APPLICATION')
@@ -116,6 +113,7 @@ class App {
                 powerSwitchButton.className = 'power-off'
                 break
         }
+        versionInfo.innerHTML = newState.versionInfo
 
         powerSwitchButton.onclick = () => dispatch({ type: this.Msg.powerButtonClick })
 
