@@ -14,7 +14,7 @@ function getState() {
             compName = activeItem.name;
             totalLayer = activeItem.layers.length ? activeItem.layers.length : 0;
 
-            return 'Working on ' + compName + ' (' + totalLayer + ' Layers)'
+            return compName + ' (' + totalLayer + ' Layers)'
         }
         return 'Idling.'
     } catch (e) {

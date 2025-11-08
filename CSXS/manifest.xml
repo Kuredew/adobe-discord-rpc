@@ -4,7 +4,7 @@
 
     ExtensionBundleId="com.kureichi.discordrpc"
 
-    ExtensionBundleVersion="2.3.0"
+    ExtensionBundleVersion="3.0.0"
 
     ExtensionBundleName="Kureichi RPC">
 
@@ -66,7 +66,7 @@
 
         <Resources>
 
-          <MainPath>./panel/index.html</MainPath>
+          <MainPath>./view/index.html</MainPath>
 
           <CEFCommandLine>
 
@@ -122,7 +122,7 @@
 
         <Resources>
 
-          <MainPath>./extension/index.html</MainPath>
+          <MainPath>./index.html</MainPath>
 
           <ScriptPath>./jsx/AEFT.jsx</ScriptPath>
 
@@ -198,7 +198,7 @@
 
         <Resources>
 
-          <MainPath>./extension/index.html</MainPath>
+          <MainPath>./index.html</MainPath>
 
           <ScriptPath>./jsx/PHSP.jsx</ScriptPath>
 
@@ -274,7 +274,7 @@
 
         <Resources>
 
-          <MainPath>./extension/index.html</MainPath>
+          <MainPath>./index.html</MainPath>
 
           <ScriptPath>./jsx/PHXS.jsx</ScriptPath>
 
@@ -350,7 +350,7 @@
 
         <Resources>
 
-          <MainPath>./extension/index.html</MainPath>
+          <MainPath>./index.html</MainPath>
 
           <ScriptPath>./jsx/PPRO.jsx</ScriptPath>
 

@@ -10,7 +10,7 @@ function getDetails() {
 
 function getState() {
     try {
-        return 'Editing on ' + app.activeDocument.activeLayer.name;
+        return app.activeDocument.activeLayer.name;
     } catch (e) {
         return 'Idling.'
     }

@@ -1,7 +1,7 @@
 {
-  "name": "ae-rpc",
+  "name": "adobe-discord-rpc",
   "type": "module",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Discord Rich Presence for AE made by Kureichi",
   "scripts": {
     "dev": "node ./scripts/development.js",
@@ -29,6 +29,7 @@
     "@parcel/core": "^2.16.0",
     "@parcel/plugin": "^2.16.0",
     "buffer": "^6.0.3",
+    "chokidar": "^4.0.3",
     "events": "^3.3.0",
     "parcel": "^2.16.0",
     "process": "^0.11.10",

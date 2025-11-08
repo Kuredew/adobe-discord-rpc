@@ -482,6 +482,4 @@ window.onload = function() {
         login();
         return;
     }
-
-    console.log('LOAD:: Power is OFF, not trying to login.')
 }

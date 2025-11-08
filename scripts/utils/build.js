@@ -13,7 +13,7 @@ function build() {
 
     console.log('::BUILD : Copying dependencies to ./dist')
 
-    fs.cpSync("./panel/assets", './dist/view/assets', {recursive: true})
+    fs.cpSync("./src/view/assets", './dist/view/assets', {recursive: true})
     fs.cpSync("./src/view/index.html", './dist/view/index.html')
     fs.cpSync("./src/index.html", './dist/index.html')
 
@@ -21,6 +21,9 @@ function build() {
     fs.cpSync("./CSXS", './dist/CSXS', {recursive: true})
     fs.cpSync("./libs", './dist/libs', {recursive: true})
     fs.cpSync("./jsx", './dist/jsx', {recursive: true})
+
+    fs.cpSync("./scripts/dep/node_modules", './dist/node_modules', {recursive: true})
+    fs.cpSync("./config.json", './dist/config.json')
 
     console.log('::BUILD : Successfully copied dependencies.')
 

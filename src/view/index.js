@@ -1,190 +1,190 @@
+import StateManager from '../model/stateManager'
+
 const PanelVersion = 'v2.3.0-beta.1';
 const apiUrl = 'https://api.github.com/repos/Kuredew/adobe-discord-rpc/releases/latest';
 
 const csInterface = new CSInterface();
 
-const powerSwitchEvent = new CSEvent('com.kureichi.rpc.power-switch', 'APPLICATION');
-const getPowerSwitchInfoEvent = new CSEvent('com.kureichi.rpc.get-power-switch-info', 'APPLICATION');
-
-const readyEvent = new CSEvent('com.kureichi.rpc.ready', 'APPLICATION');
-const getConnectionInfoEvent = new CSEvent('com.kureichi.rpc.get-connection-info', 'APPLICATION');
-
-const toggleDetailsEvent = new CSEvent('com.kureichi.rpc.toggle-details', 'APPLICATION');
-const toggleStateEvent = new CSEvent('com.kureichi.rpc.toggle-state', 'APPLICATION');
-const getToggleDetailsInfoEvent = new CSEvent('com.kureichi.rpc.get-toggle-details-info', 'APPLICATION');
-const getToggleStateInfoEvent = new CSEvent('com.kureichi.rpc.get-toggle-state-info', 'APPLICATION');
+const getStateEvent = new CSEvent('com.kureichi.rpc.get-state', 'APPLICATION')
+const stateEvent = new CSEvent('com.kureichi.rpc.state-from-view', 'APPLICATION')
 
 const versionInfo = document.getElementById('version');
 const powerSwitchButton = document.getElementById('button');
+
 const connectionInfo = document.getElementById('state');
 const statusIndicator = document.querySelector('.status-indicator');
+
 const toggleDetails = document.getElementById('toggle-details');
 const toggleState = document.getElementById('toggle-state');
-const moreButton = document.getElementById('more-button');
-const moreContainer = document.getElementById('more-container');
-const closeMoreWindowButton = document.getElementById('close-more-window-button');
 
-// Local state for panel UI
-const panelState = {
-    connected: false
-};
+const openMoreSettingsWindowButton = document.getElementById('more-button');
+const moreSettingsWindow = document.getElementById('more-container');
+const closeMoreSettingsWindowButton = document.getElementById('close-more-window-button');
 
-async function checkLatestVersion() {
-    try {
-        const response = await fetch(apiUrl);
+const toggleCustomImage = document.getElementById('toggle-custom-image')
+const customImageURL = document.getElementById('custom-image-url')
 
-        if (response.ok) {
-            const data = await response.json();
+const toggleCustomPrefix = document.getElementById('toggle-custom-prefix')
+const customPrefixStr = document.getElementById('custom-prefix-str')
 
-            const latestVersion = data.tag_name;
-            if (latestVersion != PanelVersion) {
-                versionInfo.innerHTML = `New Update ${latestVersion} ↗`;
-            } else {
-                versionInfo.innerHTML = PanelVersion;
-            }
-        } else {
-            console.log('Panel:: Response not ok, retrying...');
+// ELM Arch in js yeah
+class App {
+    constructor() {
+        console.log('[App] App initialized')
+        this.Msg = {
+            showStateChange: 'STATE_CHANGE',
+            showDetailsChange: 'DETAILS_CHANGE',
 
-            setTimeout(checkLatestVersion, 3000);
+            openMoreSettingsWindowClick: "OPEN_MORE_SETTINGS_WINDOW_CLICK",
+            closeMoreSettingsWindowClick: "CLOSE_MORE_SETTINGS_WINDOW_CLICK",
+
+            customImageChange: 'CUSTOM_IMAGE_CHANGE',
+            customImageURLChange: 'CUSTOM_IMAGE_URL_CHANGE',
+            customPrefixChange: 'CUSTOM_PREFIX_CHANGE',
+            customPrefixStrChange: 'CUSTOM_PREFIX_URL_CHANGE',
+
+            powerButtonClick: 'POWER_BUTTON_CLICK'
         }
-    } catch (e) {
-        console.log('Panel:: Error while trying to fetch api, ' + e);
-        
-        setTimeout(checkLatestVersion, 5000);
     }
-}
+
+    Update(msg, currentState) {
+        const newModel = { ...currentState }
+
+        switch (msg.type) {
+            case this.Msg.showStateChange:
+                newModel.showState = toggleState.checked
+                break
+            case this.Msg.showDetailsChange:
+                newModel.showDetails = toggleDetails.checked
+                break
+            case this.Msg.openMoreSettingsWindowClick:
+                newModel.showMoreSettingsWindow = true
+                break
+            case this.Msg.closeMoreSettingsWindowClick:
+                newModel.showMoreSettingsWindow = false
+                break
+            case this.Msg.customImageChange:
+                newModel.customImage = toggleCustomImage.checked
+                newModel.customImageURL = customImageURL.value
+                break
+            case this.Msg.customImageURLChange:
+                newModel.customImageURL = customImageURL.value
+                break
+            case this.Msg.customPrefixChange:
+                newModel.customPrefix = toggleCustomPrefix.checked
+                newModel.customPrefixStr = customPrefixStr.value
+                break
+            case this.Msg.customPrefixStrChange:
+                newModel.customPrefixStr = customPrefixStr.value
+                break
+            case this.Msg.powerButtonClick:
+                const currentPower = currentState.power
+                newModel.power = currentPower ? false : true
+                break
+            default:
+                console.log('[App:Update] Msg not match')
+        }
+
+        console.log(`[App:Update] Updated State to ${JSON.stringify(currentState, null, 2)}`)
+        return newModel
+    }
 
 
-function connected() {
-    connectionInfo.innerHTML = 'Connected';
-    statusIndicator.className = 'status-indicator connected';
-    panelState.connected = true;
-}
+    ViewRender(newState, dispatch) {
+        switch (newState.rpcConnection) {
+            case "connected":
+                connectionInfo.innerHTML = 'Connected'
+                statusIndicator.className = 'status-indicator connected'
+                break
+            case "connecting":
+                connectionInfo.innerHTML = 'Connecting...'
+                statusIndicator.className = 'status-indicator connecting'
+                break
+            case "disconnected":
+                connectionInfo.innerHTML = 'Disconnected'
+                statusIndicator.className = 'status-indicator disconnected'
+                break
+        }
 
-function connecting() {
-    connectionInfo.innerHTML = 'Connecting...';
-    statusIndicator.className = 'status-indicator connecting';
-}
+        switch (newState.power) {
+            case true:
+                powerSwitchButton.innerHTML = 'On'
+                powerSwitchButton.className = 'power-on'
+                break
+            case false:
+                powerSwitchButton.innerHTML = 'Off'
+                powerSwitchButton.className = 'power-off'
+                break
+        }
 
-function disconnected() {
-    connectionInfo.innerHTML = 'Disconnected';
-    statusIndicator.className = 'status-indicator disconnected';
-    panelState.connected = false;
-}
+        powerSwitchButton.onclick = () => dispatch({ type: this.Msg.powerButtonClick })
 
-function powerSwitchOn() {
-    powerSwitchButton.innerHTML = 'On';
-    powerSwitchButton.className = 'power-on';
-}
+        toggleState.checked = newState.showState
+        toggleState.onchange = () => dispatch({ type: this.Msg.showStateChange })
 
-function powerSwitchOff() {
-    powerSwitchButton.innerHTML = 'Off';
-    powerSwitchButton.className = 'power-off';
-}
+        toggleDetails.checked = newState.showDetails
+        toggleDetails.onchange = () => dispatch({ type: this.Msg.showDetailsChange })
 
+        openMoreSettingsWindowButton.onclick = () => dispatch({ type: this.Msg.openMoreSettingsWindowClick })
+        closeMoreSettingsWindowButton.onclick = () => dispatch({ type: this.Msg.closeMoreSettingsWindowClick })
+        moreSettingsWindow.style.display = newState.showMoreSettingsWindow ? 'flex' : 'none'
 
-csInterface.addEventListener('com.kureichi.rpc.connection-info', (e) => {
-    const info = e.data
+        toggleCustomImage.checked = newState.customImage
+        toggleCustomImage.onchange = () => dispatch({ type: this.Msg.customImageChange })
 
-    if (info == "connected") {
-        connected();
+        customImageURL.value = newState.customImageURL
+        customImageURL.onchange = () => dispatch({ type: this.Msg.customImageURLChange })
+
+        toggleCustomPrefix.checked = newState.customPrefix
+        toggleCustomPrefix.onchange = () => dispatch({ type: this.Msg.customPrefixChange })
+
+        customPrefixStr.value = newState.customPrefixStr
+        customPrefixStr.onchange = () => dispatch({ type: this.Msg.customPrefixStrChange })
+
+        console.log('[App:ViewRender] Component rendered')
+
+        // while this is not a perfect elm architecture, we can just update the html directly and return empty to make it faster
         return
-
-    } else if (info == "connecting") {
-        connecting();
-    } else if (info == "disconnected") {
-        disconnected();
     }
-})
-
-csInterface.addEventListener('com.kureichi.rpc.power-switch-info', (e) => {
-    const power = e.data
-    
-    if (power == "on") {
-        console.log('Power Switch Is On');
-        powerSwitchOn();
-    } else if (power == "off") {
-        console.log('Power Switch Is Off');
-        powerSwitchOff();
-    }
-})
-
-powerSwitchButton.addEventListener('click', () => {
-    csInterface.dispatchEvent(powerSwitchEvent);
-})
-
-versionInfo.addEventListener('click', () => {
-    csInterface.openURLInDefaultBrowser('https://github.com/Kuredew/adobe-discord-rpc/releases/latest');
-})
-
-// Toggle event handlers
-toggleDetails.addEventListener('change', (e) => {
-    const enabled = e.target.checked ? 'on' : 'off';
-    toggleDetailsEvent.data = enabled;
-    // Save immediately for quick feedback
-    localStorage.setItem('showDetails', enabled);
-    // Dispatch event to background extension
-    csInterface.dispatchEvent(toggleDetailsEvent);
-    console.log(`Panel:: Details toggle set to ${enabled} - updating RPC immediately`);
-})
-
-toggleState.addEventListener('change', (e) => {
-    const enabled = e.target.checked ? 'on' : 'off';
-    toggleStateEvent.data = enabled;
-    // Save immediately for quick feedback
-    localStorage.setItem('showState', enabled);
-    // Dispatch event to background extension
-    csInterface.dispatchEvent(toggleStateEvent);
-    console.log(`Panel:: State toggle set to ${enabled} - updating RPC immediately`);
-})
-
-moreButton.addEventListener('click', () => {
-    moreContainer.style.display = 'flex';
-})
-closeMoreWindowButton.addEventListener('click', () => {
-    moreContainer.style.display = 'none';
-})
-
-// Listen for toggle info updates from extension
-csInterface.addEventListener('com.kureichi.rpc.toggle-details-info', (e) => {
-    const enabled = e.data === 'on';
-    toggleDetails.checked = enabled;
-})
-
-csInterface.addEventListener('com.kureichi.rpc.toggle-state-info', (e) => {
-    const enabled = e.data === 'on';
-    toggleState.checked = enabled;
-})
-
-// Call Extension
-window.onload = function() {
-    //powerSwitchButton.click();
-    csInterface.dispatchEvent(readyEvent);
-    checkLatestVersion();
-    
-    // Wait for background extension to load after ready event
-    // Background extensions start when readyEvent is dispatched
-    setTimeout(() => {
-        // Load saved toggle preferences
-        const showDetails = localStorage.getItem('showDetails');
-        const showState = localStorage.getItem('showState');
-        
-        if (showDetails) {
-            toggleDetails.checked = showDetails === 'on';
-            toggleDetailsEvent.data = showDetails;
-            csInterface.dispatchEvent(toggleDetailsEvent);
-        }
-        
-        if (showState) {
-            toggleState.checked = showState === 'on';
-            toggleStateEvent.data = showState;
-            csInterface.dispatchEvent(toggleStateEvent);
-        }
-        
-        console.log('WINDOW:: Updating info...')
-        csInterface.dispatchEvent(getConnectionInfoEvent);
-        csInterface.dispatchEvent(getPowerSwitchInfoEvent);
-        csInterface.dispatchEvent(getToggleDetailsInfoEvent);
-        csInterface.dispatchEvent(getToggleStateInfoEvent);
-    }, 1000); // Wait for background extension to initialize
 }
+
+
+function main() {
+    const app = new App()
+    const stateManager = new StateManager(localStorage)
+
+    // we decided to use the state object instead of updating directly to the state class
+    let currentState = stateManager.toObj()
+
+    csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (r) => {
+        console.log('[Main:listener] Got State from backend, received with value : ' + JSON.stringify(r.data, null, 4))
+        // currentState.updateFromObj(r.data)
+        currentState = r.data
+        render(currentState)
+    })
+
+    const dispatchStateEvent = (state) => {
+        stateEvent.data = state
+        csInterface.dispatchEvent(stateEvent)
+
+        console.log('[Main:dispatchStateEvent] Dispatched State')
+    }
+
+    const dispatch = (msg) => {
+        console.log('[Main:dispatch] Got msg from View, updating state')
+
+        currentState = app.Update(msg, currentState)
+        dispatchStateEvent(currentState)
+    }
+
+    const render = (state) => {
+        console.log('[Main:render] Rendering component')
+        app.ViewRender(state, dispatch)
+    }
+
+    setTimeout(() => {
+        csInterface.dispatchEvent(getStateEvent)
+    }, 1000)
+}
+
+window.onload = () => main()

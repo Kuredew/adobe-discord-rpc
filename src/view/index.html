@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord RPC</title>
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
+
 <body>
     <div class="panel">
         <div class="header">
@@ -20,9 +22,9 @@
             </div>
             <button id="button">Please Wait</button>
         </div>
-        
+
         <div class="divider"></div>
-        
+
         <div class="options-container">
             <div class="option-item">
                 <label class="toggle-label">
@@ -62,7 +64,8 @@
                                 <input type="checkbox" id="toggle-custom-image">
                                 <span class="toggle-slider"></span>
                             </label>
-                            <input type="text" class="toggle-input" placeholder="https://your-image-url.com/image.png">
+                            <input id="custom-image-url" type="text" class="toggle-input"
+                                placeholder="https://your-image-url.com/image.png">
                         </div>
                         <div class="option-item">
                             <label class="toggle-label">
@@ -70,7 +73,7 @@
                                 <input type="checkbox" id="toggle-custom-prefix">
                                 <span class="toggle-slider"></span>
                             </label>
-                            <input type="text" class="toggle-input" placeholder="Working on ">
+                            <input id="custom-prefix-str" type="text" class="toggle-input" placeholder="Working on ">
                         </div>
                     </div>
                 </div>
@@ -79,10 +82,12 @@
 
         <div class="footer">
             <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
-            <p class="contributor">contributions by <a href="https://github.com/omaralhami" class="contributor-name">mar</a></p>
+            <p class="contributor">contributions by <a href="https://github.com/omaralhami"
+                    class="contributor-name">mar</a></p>
         </div>
     </div>
     <script src="../libs/CSInterface.js"></script>
     <script src="./index.js"></script>
 </body>
+
 </html>

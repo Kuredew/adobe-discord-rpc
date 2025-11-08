@@ -19,7 +19,7 @@ function getState() {
             if (app.project.rootItem && app.project.rootItem.children) {
                 itemCount = app.project.rootItem.children.numItems;
             }
-            return "Working on " + sequenceName + " (" + itemCount + " items)";
+            return sequenceName + " (" + itemCount + " items)";
         }
         return "Idling.";
     } catch (e) {
