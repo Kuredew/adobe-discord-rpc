@@ -18,21 +18,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 10
+          run_install: false
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
       - name: Install dependencies (root)
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Install dependencies (scripts/dep)
         working-directory: scripts/dep
-        run: pnpm install --frozen-lockfile
+        run: pnpm install 
 
       - name: Build extension
         run: pnpm run build
