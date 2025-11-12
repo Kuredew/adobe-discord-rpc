@@ -109,13 +109,11 @@ class AdobeRPC {
                 return;
             }
 
-            const stateObj = this.stateManager.toObj()
+            if (r != this.stateManager[props]) {
+                console.log(`[AdobeRPC:executeScript] Detected changes (${this.stateManager[props]} -> ${r})`)
+                this.stateManager[props] = r;
 
-            if (r != stateObj[props]) {
-                console.log(`[AdobeRPC:executeScript] Detected changes (${stateObj[props]} -> ${r})`)
-                stateObj[props] = r;
-
-                this.stateManager.updateFromObj(stateObj)
+                // this.stateManager.updateFromObj(stateObj)
                 this.updateActivity();
             }
         })

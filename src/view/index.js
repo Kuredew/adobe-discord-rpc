@@ -152,7 +152,8 @@ function main() {
     const stateManager = new StateManager(localStorage)
 
     // we decided to use the state object instead of updating directly to the state class
-    let currentState = stateManager.toObj()
+    // update: Nah we'll use statemanager instance class
+    let currentState = stateManager
 
     csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (r) => {
         console.log('[Main:listener] Got State from backend, received with value : ' + JSON.stringify(r.data, null, 4))
