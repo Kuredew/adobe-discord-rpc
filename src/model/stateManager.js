@@ -2,107 +2,75 @@ class StateManager {
     constructor(localStorage) {
         localStorage.clear()
         this.localStorage = localStorage
-        this.rawData = this.localStorage.getItem('data');
-
-        if (!this.rawData) {
-            this.init()
-        } else {
-            try {
-                this.data = JSON.parse(this.rawData)
-            } catch (error) {
-                console.log('[StateManager] Error while parsing data from localStorage, resetting...')
-                this.init()
-            }
+        
+        this.defaults = {
+            versionInfo: null,
+            power: false,
+            rpcConnection: null,
+            rpcDetails: null,
+            rpcState: null,
+            showDetails: true,
+            showState: true,
+            showMoreSettingsWindow: false,
+            customImage: false,
+            customImageURL: null,
+            customPrefix: false,
+            customPrefixStr: null
         }
 
-        this.versionInfo = this.data.versionInfo
-
-        this.power = this.data.power
-        this.rpcConnection = "disconnected"
-        this.rpcDetails = this.data.rpcDetails
-        this.rpcState = this.data.rpcState
-
-        this.showDetails = this.data.showDetails
-        this.showState = this.data.showState
-
-        this.showMoreSettingsWindow = this.data.showMoreSettingsWindow
-
-        this.customImage = this.data.customImage
-        this.customImageURL = this.data.customImageURL
-        this.customPrefix = this.data.customPrefix
-        this.customPrefixStr = this.data.customPrefixStr
-
-        this.updateLocalStorage()
+        this.init()
     }
 
     init() {
         console.log('[StateManager:init] Initializing...')
-        this.data = {
-            versionInfo: null,
 
-            power: false,
-            rpcConnection: "disconnected",
-            rpcDetails: null,
-            rpcState: null,
+        const rawData = this.localStorage.getItem('data');
+        let data = JSON.parse(rawData)
 
-            showDetails: true,
-            showState: true,
+        for (const key in this.defaults) {
+            this[key] = this.defaults[key]
 
-            showMoreSettingsWindow: false,
+            if (!data) continue
 
-            customImage: true,
-            customImageURL: null,
-            customPrefix: true,
-            customPrefixStr: null
+            if (key in data) {
+                this[key] = data[key]
+            }
         }
+
+        this.updateLocalStorage()
     }
 
     toObj() {
         // console.log('[StateManager:toObj] Convert State to Object')
-        return {
-            versionInfo: this.versionInfo,
+        const data = {}
 
-            power: this.power,
-            rpcConnection: this.rpcConnection,
-            rpcDetails: this.rpcDetails,
-            rpcState: this.rpcState,
-
-            showDetails: this.showDetails,
-            showState: this.showState,
-
-            showMoreSettingsWindow: this.showMoreSettingsWindow,
-
-            customImage: this.customImage,
-            customImageURL: this.customImageURL,
-            customPrefix: this.customPrefix,
-            customPrefixStr: this.customPrefixStr,
+        for (const key in this.defaults) {
+            data[key] = this[key]
         }
+
+        console.log('[StateManager:toObj] Converted State to JS Object');
+        
+        return data
     }
 
     toJsonStr() {
-        // console.log('[StateManager:toJsonStr] Convert State to JSON String')
-        return JSON.stringify(this.toObj(), null, 4)
+        const data = {}
+
+        for (const key in this.defaults) {
+            data[key] = this[key]
+        }
+        
+        console.log('[StateManager:toJsonStr] Converted State to JSON String')
+        return JSON.stringify(data, null, 4)
     }
 
     updateFromObj(obj) {
         try {
             console.log('[StateManager:updateFromObj] Processing update from Object data')
-            this.versionInfo = obj.versionInfo
 
-            this.power = obj.power
-            this.rpcConnection = obj.rpcConnection
-            this.rpcDetails = obj.rpcDetails
-            this.rpcState = obj.rpcState
-
-            this.showDetails = obj.showDetails
-            this.showState = obj.showState
-
-            this.showMoreSettingsWindow = obj.showMoreSettingsWindow
-
-            this.customImage = obj.customImage
-            this.customImageURL = obj.customImageURL
-            this.customPrefix = obj.customPrefix
-            this.customPrefixStr = obj.customPrefixStr
+            for (const key in this.defaults) {
+                this[key] = obj[key]
+            }
 
             this.updateLocalStorage()
         } catch (error) {
@@ -123,9 +91,10 @@ class StateManager {
 
     updateLocalStorage() {
         const jsonStr = this.toJsonStr()
-        console.log(`[StateManager:updateLocalStorage] Updating localStorage data to ${jsonStr}`)
-
+        
         this.localStorage.setItem('data', jsonStr)
+        console.log(`[StateManager:updateLocalStorage] Updated localStorage data to ${jsonStr}`)
+        // console.log('[StateManager:updateLocalStorage] Updated LocalStorage');
     }
 }
 
