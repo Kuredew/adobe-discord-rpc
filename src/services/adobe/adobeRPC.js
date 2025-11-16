@@ -113,7 +113,6 @@ class AdobeRPC {
                 console.log(`[AdobeRPC:executeScript] Detected changes (${this.stateManager[props]} -> ${r})`)
                 this.stateManager[props] = r;
 
-                // this.stateManager.updateFromObj(stateObj)
                 this.updateActivity();
             }
         })
@@ -134,7 +133,6 @@ class AdobeRPC {
             startTimestamp: this.startTimestamp,
             largeImageKey: this.adobeApp.appImg,
             largeImageText: this.adobeApp.appName,
-            // smallImageKey: "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png",
         }
 
         if (this.stateManager.rpcDetails && this.stateManager.showDetails) {
@@ -185,8 +183,6 @@ class AdobeRPC {
         this.interval = setInterval(() => {
             // Return if RPC Connection is disconnected or connecting
             if (this.stateManager.rpcConnection == "disconnected" || this.stateManager.rpcConnection == "connecting") return
-
-            // console.log('[AdobeRPC:startPolling] Polling executed.')
 
             this.executeScript('rpcDetails', 'getDetails()');
             this.executeScript('rpcState', 'getState()');
