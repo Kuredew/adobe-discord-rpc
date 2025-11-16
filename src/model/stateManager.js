@@ -1,14 +1,19 @@
 class StateManager {
     constructor(localStorage) {
-        localStorage.clear()
+        //localStorage.clear()
         this.localStorage = localStorage
         
         this.defaults = {
             versionInfo: null,
-            power: false,
+            power: true,
+            
             rpcConnection: null,
             rpcDetails: null,
             rpcState: null,
+            rpcSmallImageKey: null,
+            rpcPartySize: null,
+            rpcPartyMax: null,
+
             showDetails: true,
             showState: true,
             showMoreSettingsWindow: false,
