@@ -15,3 +15,11 @@ function getState() {
         return 'Idling.'
     }
 }
+
+function getSmallImageKey(){
+    try{
+        return app.currentTool.toString().toLowerCase();
+    }catch(e){
+        return "";
+    }
+}

@@ -26,3 +26,6 @@ function getState() {
         return "Idling.";
     }
 }
+
+function getSmallImageKey(){
+}

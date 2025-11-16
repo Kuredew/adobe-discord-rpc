@@ -134,7 +134,7 @@ class AdobeRPC {
             startTimestamp: this.startTimestamp,
             largeImageKey: this.adobeApp.appImg,
             largeImageText: this.adobeApp.appName,
-            smallImageKey: "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png",
+            // smallImageKey: "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751014304/Twitter_Verified_Badge.svg_qtdyir.png",
         }
 
         if (this.stateManager.rpcDetails && this.stateManager.showDetails) {
@@ -153,6 +153,10 @@ class AdobeRPC {
             stateStr += this.stateManager.rpcState
 
             activity.state = stateStr;
+        }
+
+        if (this.stateManager.rpcSmallImageKey) {
+            activity.smallImageKey = this.stateManager.rpcSmallImageKey
         }
 
         if (this.stateManager.customImage && this.stateManager.customImageURL) {
@@ -181,6 +185,7 @@ class AdobeRPC {
 
             this.executeScript('rpcDetails', 'getDetails()');
             this.executeScript('rpcState', 'getState()');
+            this.executeScript('rpcSmallImageKey', 'getSmallImageKey()');
         }, 1000)
 
         console.log('[AdobeRPC:startPolling] Polling Started')

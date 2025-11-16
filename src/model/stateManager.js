@@ -6,9 +6,12 @@ class StateManager {
         this.defaults = {
             versionInfo: null,
             power: false,
+            
             rpcConnection: null,
             rpcDetails: null,
             rpcState: null,
+            rpcSmallImageKey: null,
+
             showDetails: true,
             showState: true,
             showMoreSettingsWindow: false,

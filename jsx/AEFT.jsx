@@ -21,3 +21,11 @@ function getState() {
         return 'No Composition'
     }
 }
+
+function getSmallImageKey(){
+    try{
+        return app.project.toolType;
+    }catch(e){
+        return "";
+    }
+}
