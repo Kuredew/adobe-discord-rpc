@@ -159,6 +159,11 @@ class AdobeRPC {
             activity.smallImageKey = this.stateManager.rpcSmallImageKey
         }
 
+        if (this.stateManager.rpcPartySize && this.stateManager.rpcPartyMax) {
+            activity.partySize = parseInt(this.stateManager.rpcPartySize)
+            activity.partyMax = parseInt(this.stateManager.rpcPartyMax)
+        }
+
         if (this.stateManager.customImage && this.stateManager.customImageURL) {
             activity.largeImageKey = this.stateManager.customImageURL
         }
@@ -186,6 +191,8 @@ class AdobeRPC {
             this.executeScript('rpcDetails', 'getDetails()');
             this.executeScript('rpcState', 'getState()');
             this.executeScript('rpcSmallImageKey', 'getSmallImageKey()');
+            this.executeScript('rpcPartySize', 'getPartySize()');
+            this.executeScript('rpcPartyMax', 'getPartyMax()');
         }, 1000)
 
         console.log('[AdobeRPC:startPolling] Polling Started')

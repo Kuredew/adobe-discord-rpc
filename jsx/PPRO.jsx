@@ -1,3 +1,5 @@
+// some code is adapted from https://github.com/teeteeteeteetee/adobe-discord-rpc
+
 function getDetails() {
     try {
         if (app.project && app.project.file && app.project.file.name) {
@@ -28,4 +30,10 @@ function getState() {
 }
 
 function getSmallImageKey(){
+}
+
+function getPartySize() {
+}
+
+function getPartyMax() {
 }
