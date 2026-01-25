@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies (scripts/dep)
         working-directory: scripts/dep
-        run: pnpm install 
+        run: pnpm install --config.node-linker=hoisted
 
       - name: Build extension
         run: pnpm run build
