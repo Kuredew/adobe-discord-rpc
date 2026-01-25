@@ -17,20 +17,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+          node-version: 16
 
       - name: Install dependencies (root)
-        run: pnpm install
+        run: npm install
 
       - name: Install dependencies (scripts/dep)
         working-directory: scripts/dep
         run: npm install
 
       - name: Build extension
-        run: pnpm run build
+        run: npm run build
 
       - name: Upload ZIP Release
         uses: actions/upload-artifact@v4
