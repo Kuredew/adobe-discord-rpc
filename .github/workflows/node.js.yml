@@ -8,37 +8,38 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
 
       - name: Install dependencies (root)
         run: pnpm install
 
       - name: Install dependencies (scripts/dep)
         working-directory: scripts/dep
-        run: pnpm install 
+        run: npm install
 
       - name: Build extension
         run: pnpm run build
 
-      - name: Upload build artifacts
+      - name: Upload ZIP Release
         uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ matrix.node-version }}
-          path: dist/
+          name: "ZIP Release"
+          path: dist/com.kureichi.discordrpc.zip
+
+      - name: Upload ZXP Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: "ZXP Release"
+          path: dist/com.kureichi.discordrpc.zxp

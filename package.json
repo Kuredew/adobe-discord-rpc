@@ -22,7 +22,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.19.0",
   "dependencies": {
-    "discord-rpc": "^4.0.1"
+    "archiver": "^7.0.1",
+    "discord-rpc": "^4.0.1",
+    "zxp-sign-cmd": "^2.0.0"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.16.0",

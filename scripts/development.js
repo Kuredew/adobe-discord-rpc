@@ -1,15 +1,20 @@
 import chokidar from 'chokidar';
-import build from './utils/build.js';
+import build from './utils/buildExtension.js';
 import createSymlink from './utils/createSymlink.js';
+import { symlinkTarget, outputExtensionFolderPath } from './config.js';
+import Logger from './utils/logger.js';
+
+const logger = new Logger("development")
+const log = (msg) => logger.log(msg)
 
 const watcher = chokidar.watch(['./src'], { ignoreInitial: true })
 
 let building = true
 function main() {
-    build()
-    createSymlink()
+    build(outputExtensionFolderPath)
+    createSymlink(outputExtensionFolderPath, symlinkTarget)
 
-    console.log("::WATCHER : Watching File...")
+    log("Watching File...")
 
     building = false
     watcher.on('all', async() => {
@@ -17,11 +22,11 @@ function main() {
 
         building = true
 
-        console.log('::WATCHER : Change detected, Rebuilding...')
-        build()
+        log('Change detected, Rebuilding...')
+        build(outputExtensionFolderPath)
 
         building = false
-        console.log("::WATCHER : Watching File...")
+        log("Watching File...")
     })
 }
 
