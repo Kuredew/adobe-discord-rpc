@@ -14,6 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - uses: pnpm/action-setup@v4
         name: Install pnpm
 
@@ -22,7 +27,7 @@ jobs:
 
       - name: Install dependencies (scripts/dep)
         working-directory: scripts/dep
-        run: pnpm install --config.node-linker=hoisted
+        run: npm install
 
       - name: Build extension
         run: pnpm run build
@@ -30,9 +35,11 @@ jobs:
       - name: Upload ZIP Release
         uses: actions/upload-artifact@v4
         with:
+          name: "ZIP Release"
           path: dist/com.kureichi.discordrpc.zip
 
       - name: Upload ZXP Release
         uses: actions/upload-artifact@v4
         with:
+          name: "ZXP Release"
           path: dist/com.kureichi.discordrpc.zxp
