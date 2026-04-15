@@ -22,6 +22,11 @@ function main() {
     })
 
     rpc.login(() => stateEvent.dispatchEvent())
+
+    const csInterface = new CSInterface()
+    csInterface.addEventListener(CSInterface.ADOBE_APPLICATION_BEFORE_APPCLOSE, () => {
+        try { rpc.client.destroy() } catch(e) {}
+    })
 }
 
 

@@ -95,11 +95,20 @@ class AdobeRPC {
     }
 
     logout() {
-        this.client.destroy().then(() => {
+        this.client.clearActivity().then(() => {
+            return this.client.destroy()
+        }).then(() => {
             clearInterval(this.interval)
+            this.stateManager.rpcConnection = 'disconnected'
+            this.callback()
             console.log('[AdobeRPC:logout] Successfully logout and clear interval')
+        }).catch((err) => {
+            console.log('[AdobeRPC:logout] Error: ' + err)
+            clearInterval(this.interval)
+            this.stateManager.rpcConnection = 'disconnected'
+            this.callback()
         })
-
+        
     }
 
     executeScript(props, func) {
