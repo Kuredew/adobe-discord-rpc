@@ -1,5 +1,8 @@
-class StateManager {
+import EventEmitter from "events";
+
+class StateManager extends EventEmitter {
     constructor(localStorage) {
+        super()
         //localStorage.clear()
         this.localStorage = localStorage
         
@@ -22,8 +25,8 @@ class StateManager {
             customPrefix: false,
             customPrefixStr: null
         }
+        this.state = this.defaults
 
-        this.init()
     }
 
     init() {
@@ -32,74 +35,46 @@ class StateManager {
         const rawData = this.localStorage.getItem('data');
         let data = JSON.parse(rawData)
 
+        if (!data) return
+
         for (const key in this.defaults) {
-            this[key] = this.defaults[key]
-
-            if (!data) continue
-
             if (key in data) {
-                this[key] = data[key]
+                this.state[key] = data[key]
+            } else {
+                this.state[key] = this.defaults[key]
             }
         }
+    }
 
+    getState() {
+        return this.state
+    }
+    
+    setState(newState) {
+        const keys = Object.keys(newState).filter((key) => {
+            if (newState[key] !== this.state[key]) {
+                return true
+            }
+            return false
+        })
+        keys.forEach((key) => {
+            console.log(`[stateManager:setState] State changed in '${key}' (${this.state[key]} -> ${newState[key]})`)
+        })
+
+        // ignore emit stateChange if none state changed
+        if (keys.length === 0) return
+
+        this.state = { ...this.state, ...newState }
+        
         this.updateLocalStorage()
-    }
-
-    toObj() {
-        // console.log('[StateManager:toObj] Convert State to Object')
-        const data = {}
-
-        for (const key in this.defaults) {
-            data[key] = this[key]
-        }
-
-        console.log('[StateManager:toObj] Converted State to JS Object');
-        
-        return data
-    }
-
-    toJsonStr() {
-        const data = {}
-
-        for (const key in this.defaults) {
-            data[key] = this[key]
-        }
-        
-        console.log('[StateManager:toJsonStr] Converted State to JSON String')
-        return JSON.stringify(data, null, 4)
-    }
-
-    updateFromObj(obj) {
-        try {
-            console.log('[StateManager:updateFromObj] Processing update from Object data')
-
-            for (const key in this.defaults) {
-                this[key] = obj[key]
-            }
-
-            this.updateLocalStorage()
-        } catch (error) {
-            console.log('[StateManager:updateFromObj] Error while processing update' + error)
-        }
-    }
-
-    updateFromJsonStr(jsonStr) {
-        try {
-            console.log('[StateManager:updateFromJsonStr] Processing update from JSON data')
-            const data = JSON.parse(jsonStr)
-
-            this.updateFromObj(data)
-        } catch (error) {
-            console.log('[StateManager:updateFromJsonStr] Error while processing update : ' + error)
-        }
+        this.emit('stateChange', this.state)
     }
 
     updateLocalStorage() {
-        const jsonStr = this.toJsonStr()
+        const jsonStr = JSON.stringify(this.state)
         
         this.localStorage.setItem('data', jsonStr)
-        console.log(`[StateManager:updateLocalStorage] Updated localStorage data to ${jsonStr}`)
-        // console.log('[StateManager:updateLocalStorage] Updated LocalStorage');
+        console.log(`[StateManager:updateLocalStorage] Updated localStorage state`)
     }
 }
 

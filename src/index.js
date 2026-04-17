@@ -3,29 +3,32 @@ import StateEvent from "./services/event/stateEvent"
 import StateManager from "./model/stateManager"
 import VersionCheck from "./services/github/versionCheck"
 
-function main() {
+async function main() {
+    const csInterface = new CSInterface()
     const versionCheck = new VersionCheck()
-
     const stateManager = new StateManager(localStorage)
     const rpc = new AdobeRPC(stateManager)
-    const stateEvent = new StateEvent(stateManager)
+    stateManager.init()
 
-    stateEvent.registerListener(() => [
-        rpc.reload()
-    ])
-
-    versionCheck.check((string) => {
-        console.log('[MAIN] Checked version : ' + string)
-
-        stateManager.versionInfo = string
-        stateEvent.dispatchEvent()
+    const stateEvent = new StateEvent(stateManager, csInterface)
+    const versionInfo = await versionCheck.getVersion()
+    stateManager.setState({ versionInfo: versionInfo })
+    
+    stateEvent.registerListener()
+    stateEvent.on('stateFromView', (state) => {
+        stateManager.setState(state)
     })
 
-    rpc.login(() => stateEvent.dispatchEvent())
+    rpc.on('adobeInfoChange', (info) => {
+        stateManager.setState(info)
+    })
+    rpc.on('connectionChange', (connection) => {
+        stateManager.setState({ rpcConnection: connection })
+    })
+    rpc.startService()
 
-    const csInterface = new CSInterface()
     csInterface.addEventListener(CSInterface.ADOBE_APPLICATION_BEFORE_APPCLOSE, () => {
-        try { rpc.client.destroy() } catch(e) {}
+        rpc.logout()
     })
 }
 

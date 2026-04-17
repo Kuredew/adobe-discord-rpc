@@ -11,44 +11,39 @@ class VersionCheck {
         this.manifestReader = new ManifestReader()
     }
 
-    check(callback) {
+    async getVersion() {
         this.manifestReader.load()
         this.currentVersion = this.manifestReader.getManifestVersion()
 
         this.currentVersionStr = 'v' + this.currentVersion
 
-        fetch(`${this.repoUrl}/releases/latest`).then((response) => {
-            console.log('[VersionCheck:check] Fetched Repository to check version')
-            if (response.ok) {
-                console.log('[VersionCheck:check] Response is OK')
-                response.json().then((data) => {
-                    console.log('[VersionCheck:check] Data is convert to JSON')
+        try {
+            console.log('[VersionCheck:check] Checking latest version...')
 
-                    const latestVersion = data.tag_name;
-                    if (parseInt(latestVersion) > parseInt(this.currentVersion)) {
-                        console.log(`[VersionCheck:check] Version (${this.currentVersionStr}) is outdated, consider to update (to ${latestVersion})`)
-
-                        this.isLatestVersion = false
-                        callback(`New Update ${latestVersion} ↗`)
-                        return
-                    }
-
-                    console.log(`[VersionCheck:check] This is latest version (${this.currentVersion})`)
-
-                    this.isLatestVersion = true
-                    callback(this.currentVersionStr)
-                    return
-                })
-
-                return
+            const response = await fetch(`${this.repoUrl}/releases/latest`)
+            if (!response.ok) {
+                console.log('[VersionCheck:check] Response not ok, retrying...');
+                setTimeout(() => this.check(), 3000);
             }
 
-            console.log('[VersionCheck:check] Response not ok, retrying...');
-            setTimeout(() => this.check(callback), 3000);
-        }).catch(() => {
+            console.log('[VersionCheck:check] Response is OK')
+            const data = await response.json()
+
+            const latestVersion = data.tag_name;
+            if (parseInt(latestVersion) > parseInt(this.currentVersion)) {
+                console.log(`[VersionCheck:check] Version (${this.currentVersionStr}) is outdated, consider to update (to ${latestVersion})`)
+
+                this.isLatestVersion = false
+                return `New Update ${latestVersion} ↗`
+            }
+
+            console.log(`[VersionCheck:check] This is latest version (${this.currentVersion})`)
+            this.isLatestVersion = true
+            return this.currentVersionStr
+        } catch(e) {
             console.log('Panel:: Error while trying to fetch api, ' + e);
-            setTimeout(() => this.check(callback), 5000);
-        })
+            setTimeout(() => this.check(), 5000);
+        }
     }
 }
 

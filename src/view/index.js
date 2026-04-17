@@ -75,8 +75,7 @@ class App {
                 newModel.customPrefixStr = customPrefixStr.value
                 break
             case this.Msg.powerButtonClick:
-                const currentPower = currentState.power
-                newModel.power = currentPower ? false : true
+                newModel.power = currentState.power ? false : true
                 break
             default:
                 console.log('[App:Update] Msg not match')
@@ -150,10 +149,11 @@ class App {
 function main() {
     const app = new App()
     const stateManager = new StateManager(localStorage)
+    stateManager.init()
 
     // we decided to use the state object instead of updating directly to the state class
     // update: Nah we'll use statemanager instance class
-    let currentState = stateManager
+    let currentState = stateManager.getState()
 
     csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (r) => {
         console.log('[Main:listener] Got State from backend, received with value : ' + JSON.stringify(r.data, null, 4))

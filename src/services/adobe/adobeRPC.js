@@ -1,16 +1,22 @@
 import { Client } from 'discord-rpc'
 import AdobeApp from './adobeApp'
+import EventEmitter from 'events'
 
-class AdobeRPC {
+class AdobeRPC extends EventEmitter{
     constructor(stateManager) {
+        super()
+
         this.client = null
         this.callback = null
         this.interval = null
 
         this.adobeApp = new AdobeApp()
         this.stateManager = stateManager
+        this.getCurrentState = null
         this.startTimestamp = new Date()
         this.csInterface = new CSInterface()
+        this.isReconnecting = false
+        this.lastActivityInfo = null
 
         this.adobeApp.load()
 
@@ -21,76 +27,72 @@ class AdobeRPC {
         this.client = new Client({ transport: 'ipc' })
         console.log('[AdobeRPC:createNewClient] Created new RPC Client')
     }
+    
+    emitConnection(connection) {
+        this.emit('connectionChange', connection)
+    }
+    
+    emitAdobeInfo(info) {
+        this.emit('adobeInfoChange', info)
+    }
 
-    login(callback) {
-        this.callback = callback
-        if (!this.stateManager.power) {
-            this.stateManager.rpcConnection = 'disconnected'
-            callback()
+    login() {
+        if (this.isReconnecting) return
 
+        const state = this.stateManager.getState()
+        if (!state.power) {
+            this.emitConnection('disconnected')
             console.log('[AdobeRPC:login] Power is OFF. login job aborted.')
             return
         }
 
         this.createNewClient()
 
-        let isReconnecting = false
         const reconnect = () => {
-            if (!isReconnecting) {
+            const state = this.stateManager.getState()
+            if (state.power && !this.isReconnecting) {
                 console.log(`[AdobeRPC:reconnect] Reconnecting RPC after 5 sec...`)
-                this.stateManager.rpcConnection = 'connecting'
-                callback()
+                this.emitConnection('connecting')
 
                 setTimeout(() => {
                     console.log('[AdobeRPC:reconnect] Reconnecting RPC...')
-                    this.login(this.callback)
+                    this.isReconnecting = false
+
+                    this.login()
                 }, 4000)
 
-                isReconnecting = true
+                this.isReconnecting = true
                 return
             }
 
-            console.log('[AdobeRPC:reconnect] Aborted reconnect job because rpc is currently reconnecting')
+            console.log('[AdobeRPC:reconnect] Aborted reconnect')
         }
 
         this.client.once("ready", () => {
             console.log('[AdobeRPC:ready] RPC Connected!')
-            this.stateManager.rpcConnection = 'connected'
-            callback()
+            this.emitConnection('connected')
 
-            console.log('[AdobeRPC:ready] Request startPolling...')
+            console.log('[AdobeRPC:ready] Starting poll...')
             this.startPolling()
         })
         this.client.once("disconnected", () => {
-            if (this.stateManager.power) {
-                console.log('[AdobeRPC:disconnected] RPC Disconnected, request reconnect job...')
-                reconnect()
-                return
-            }
+            reconnect()
 
             console.log(`[AdobeRPC:disconnected] RPC Disconnected`)
-            this.stateManager.rpcConnection = 'disconnected'
-            callback()
+            this.emitConnection('disconnected')
         })
 
 
         console.log(`[AdobeRPC:login] Connecting with ClientID(${this.adobeApp.clientId})...`)
-        this.stateManager.rpcConnection = 'connecting'
-        callback()
+        this.emitConnection('connecting')
 
         this.client.login({
             clientId: this.adobeApp.clientId
         }).catch((err) => {
             console.log(`[AdobeRPC:loginError] Error while trying to login : ${err}`)
-            if (this.stateManager.power) {
-                console.log('[AdobeRPC:loginError] Request reconnect job...')
-                reconnect()
-                return
-            }
+            reconnect()
 
-            this.stateManager.rpcConnection = 'disconnected'
-            callback()
-
+            this.emitConnection('disconnected')
         })
     }
 
@@ -98,127 +100,137 @@ class AdobeRPC {
         this.client.clearActivity().then(() => {
             return this.client.destroy()
         }).then(() => {
-            clearInterval(this.interval)
-            this.stateManager.rpcConnection = 'disconnected'
-            this.callback()
-            console.log('[AdobeRPC:logout] Successfully logout and clear interval')
+            console.log('[AdobeRPC:logout] Successfully logout')
         }).catch((err) => {
             console.log('[AdobeRPC:logout] Error: ' + err)
+        }).finally(() => {
             clearInterval(this.interval)
-            this.stateManager.rpcConnection = 'disconnected'
-            this.callback()
+            this.emitConnection('disconnected')
         })
         
     }
 
-    executeScript(props, func) {
-        this.csInterface.evalScript(func, (r) => {
-            if (r === null) {
-                console.log("[AdobeRPC:executeScript] Aborting null response");
-                return;
-            }
-
-            if (r != this.stateManager[props]) {
-                console.log(`[AdobeRPC:executeScript] Detected changes (${this.stateManager[props]} -> ${r})`)
-                this.stateManager[props] = r;
-
-                this.updateActivity();
-            }
-        })
-    }
-
-    updateActivity() {
-        console.log('[AdobeRPC:updateActivity] Begin update...')
-        if (this.stateManager.rpcConnection == "disconnected" || this.stateManager.rpcConnection == "connecting") {
-            console.log('[AdobeRPC:updateActivity] RPC is not connected, aborted job.')
-            return
-        }
-        if (!this.stateManager.power) {
-            console.log('[AdobeRPC:updateActivity] RPC Power is OFF, aborted job.')
-            return
-        }
-
+    setActivity(state) {
         const activity = {
             startTimestamp: this.startTimestamp,
             largeImageKey: this.adobeApp.appImg,
             largeImageText: this.adobeApp.appName,
         }
 
-        if (this.stateManager.rpcDetails && this.stateManager.showDetails) {
-            activity.details = this.stateManager.rpcDetails;
+        if (state.rpcDetails && state.showDetails) {
+            activity.details = state.rpcDetails;
         }
 
-        if (this.stateManager.rpcState && this.stateManager.showState) {
+        if (state.rpcState && state.showState) {
             let stateStr = ""
 
-            if (this.stateManager.customPrefix && this.stateManager.customPrefixStr) {
-                stateStr += this.stateManager.customPrefixStr + " "
+            if (state.customPrefix && state.customPrefixStr) {
+                stateStr += state.customPrefixStr + " "
             } else {
                 stateStr += "Working on "
             }
 
-            stateStr += this.stateManager.rpcState
+            if (state.rpcState === 'Idling.') {
+                stateStr = state.rpcState
+            } else {
+                stateStr += state.rpcState
+            }
 
             activity.state = stateStr;
         }
 
-        if (this.stateManager.rpcSmallImageKey) {
-            activity.smallImageKey = this.stateManager.rpcSmallImageKey
+        if (state.rpcSmallImageKey) {
+            activity.smallImageKey = state.rpcSmallImageKey
         }
 
-        if (this.stateManager.rpcPartySize && this.stateManager.rpcPartyMax) {
-            activity.partySize = parseInt(this.stateManager.rpcPartySize)
-            activity.partyMax = parseInt(this.stateManager.rpcPartyMax)
+        if (state.rpcPartySize && state.rpcPartyMax) {
+            activity.partySize = parseInt(state.rpcPartySize)
+            activity.partyMax = parseInt(state.rpcPartyMax)
         }
 
-        if (this.stateManager.customImage && this.stateManager.customImageURL) {
-            activity.largeImageKey = this.stateManager.customImageURL
+        if (state.customImage && state.customImageURL) {
+            activity.largeImageKey = state.customImageURL
         }
 
-        console.log('[AdobeRPC:updateActivity] Updating activity to ' + JSON.stringify(activity, null, 4))
+        if (this.lastActivityInfo && JSON.stringify(this.lastActivityInfo) === JSON.stringify(activity)) {
+            console.log('[AdobeRPC:updateActivity] Aborted setActivity request')
+            return
+        }
 
         this.client.setActivity(activity).catch((err) => {
-            console.log(`[AdobeRPC:updateActivity] Failed updating activity : ${err}`)
+            console.log(`[AdobeRPC:updateActivity] Failed to update activity : ${err}`)
         }).then(() => {
-            console.log(`[AdobeRPC:updateActivity] Update Finished.`)
-
-            // Update view state
-            this.callback()
+            console.log('[AdobeRPC:updateActivity] Set activity to: ' + JSON.stringify(activity, null, 4))
+            this.lastActivityInfo = activity
         });
     }
 
+    async executeScript(func) {
+        return new Promise((resolve) => {
+            this.csInterface.evalScript(func, (r) => {
+                resolve(r)
+            })
+        })
+        
+    }
+    
     startPolling() {
-        this.updateActivity()
-        this.interval = setInterval(() => {
-            // Return if RPC Connection is disconnected or connecting
-            if (this.stateManager.rpcConnection == "disconnected" || this.stateManager.rpcConnection == "connecting") return
+        const funcs = [
+            { props: 'rpcDetails', func: 'getDetails()' },
+            { props: 'rpcState', func: 'getState()' },
+            { props: 'rpcSmallImageKey', func: 'getSmallImageKey()' },
+            { props: 'rpcPartySize', func: 'getPartySize()' },
+            { props: 'rpcPartyMax', func: 'getPartyMax()' },
+        ]
 
-            this.executeScript('rpcDetails', 'getDetails()');
-            this.executeScript('rpcState', 'getState()');
-            this.executeScript('rpcSmallImageKey', 'getSmallImageKey()');
-            this.executeScript('rpcPartySize', 'getPartySize()');
-            this.executeScript('rpcPartyMax', 'getPartyMax()');
+        this.interval = setInterval(async () => {
+            let isChanged = false
+
+            const state = this.stateManager.getState()
+            const responses = []
+            
+            for (const func of funcs) {
+                const response = await this.executeScript(func.func)
+                responses.push({ props: func.props, response: response })
+            }
+            
+            const adobeInfo = {}
+            responses.forEach((response) => {
+                if (state[response.props] !== response.response) {
+                    console.log(`[AdobeRPC:Polling] Detected changes in '${response.props}' (${state[response.props]} -> ${response.response})`)
+                    adobeInfo[response.props] = response.response
+                    isChanged = true
+                }
+            })
+            
+            if (isChanged) {
+                this.emit('adobeInfoChange', adobeInfo)
+            }
         }, 1000)
 
         console.log('[AdobeRPC:startPolling] Polling Started')
     }
 
-    reload() {
-        if (!this.stateManager.power && this.stateManager.rpcConnection == "connected") {
-            console.log("[AdobeRPC:reload] Power is OFF but rpc connection is connected, logged out...")
-            clearInterval(this.interval)
+    reload(state) {
+        if (!state.power && state.rpcConnection === "connected") {
+            console.log("[AdobeRPC:reload] Power is OFF but rpc connection is connected, disconnecting RPC...")
             this.logout()
         }
 
-        if (this.stateManager.power && this.stateManager.rpcConnection == "disconnected") {
-            console.log("[AdobeRPC:reload] Power is ON but rpc connection is disconnected, logged in...")
-            this.login(this.callback)
+        if (state.power && state.rpcConnection === "disconnected") {
+            console.log("[AdobeRPC:reload] Power is ON but rpc connection is disconnected, connecting RPC...")
+            this.login()
         }
 
-        if (this.stateManager.power) {
-            console.log('[AdobeRPC:reload] Run updateActivity...')
-            this.updateActivity()
+        if (state.power && state.rpcConnection === "connected") {
+            console.log('[AdobeRPC:reload] Updating RPC activity...')
+            this.setActivity(state)
         }
+    }
+    
+    startService() {
+        this.login()
+        this.stateManager.on('stateChange', (state) => this.reload(state))
     }
 }
 
