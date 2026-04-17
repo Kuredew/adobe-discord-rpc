@@ -9,24 +9,28 @@ const log = (msg) => logger.log(msg)
 
 const watcher = chokidar.watch(['./src'], { ignoreInitial: true })
 
-let building = true
+let cooldown = false
 function main() {
     build(outputExtensionFolderPath)
     createSymlink(outputExtensionFolderPath, symlinkTarget)
 
     log("Watching File...")
 
-    building = false
     watcher.on('all', async() => {
-        if (building) return;
-
-        building = true
+        if (cooldown) {
+            log('Cooldown build')
+            return
+        }
 
         log('Change detected, Rebuilding...')
         build(outputExtensionFolderPath)
 
-        building = false
         log("Watching File...")
+
+        cooldown = true
+        setTimeout(() => {
+            cooldown = false
+        }, 2000)
     })
 }
 
