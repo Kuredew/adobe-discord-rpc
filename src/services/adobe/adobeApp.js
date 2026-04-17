@@ -24,7 +24,7 @@ class AdobeApp {
             this.appName = this.adobeAppConfig.name
             this.appImg = this.adobeAppConfig.img
 
-            console.log('[AdobeApp:load] loaded App with AppCode : ' + this.appCode)
+            console.log('[AdobeApp:load] loaded App with AppCode : ' + appCode)
         } catch (e) {
             console.log('[AdobeApp:load] Failed while load the app configuration : ' + e)
             return
