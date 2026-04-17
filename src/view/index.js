@@ -1,3 +1,4 @@
+import { Logger } from '../logger/logger';
 import StateManager from '../model/stateManager'
 
 const csInterface = new CSInterface();
@@ -24,10 +25,14 @@ const customImageURL = document.getElementById('custom-image-url')
 const toggleCustomPrefix = document.getElementById('toggle-custom-prefix')
 const customPrefixStr = document.getElementById('custom-prefix-str')
 
+const logger = new Logger('View')
+
 // ELM Arch in js yeah
 class App {
     constructor() {
-        console.log('[App] App initialized')
+        this.childLogger = logger.child('App')
+
+        this.childLogger.info('App initialized')
         this.Msg = {
             showStateChange: 'STATE_CHANGE',
             showDetailsChange: 'DETAILS_CHANGE',
@@ -78,10 +83,10 @@ class App {
                 newModel.power = currentState.power ? false : true
                 break
             default:
-                console.log('[App:Update] Msg not match')
+                this.childLogger.error('Msg not match')
         }
 
-        console.log(`[App:Update] Updated State to ${JSON.stringify(currentState, null, 2)}`)
+        this.childLogger.info(`Updated State to ${JSON.stringify(currentState, null, 2)}`)
         return newModel
     }
 
@@ -138,7 +143,7 @@ class App {
         customPrefixStr.value = newState.customPrefixStr
         customPrefixStr.onchange = () => dispatch({ type: this.Msg.customPrefixStrChange })
 
-        console.log('[App:ViewRender] Component rendered')
+        this.childLogger.info('Component rendered')
 
         // while this is not a perfect elm architecture, we can just update the html directly and return empty to make it faster
         return
@@ -147,6 +152,7 @@ class App {
 
 
 function main() {
+    const childLogger = logger.child('Main')
     const app = new App()
     const stateManager = new StateManager(localStorage)
     stateManager.init()
@@ -156,7 +162,7 @@ function main() {
     let currentState = stateManager.getState()
 
     csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (r) => {
-        console.log('[Main:listener] Got State from backend, received with value : ' + JSON.stringify(r.data, null, 4))
+        childLogger.info('Got State from backend, received with value : ' + JSON.stringify(r.data, null, 4))
         // currentState.updateFromObj(r.data)
         currentState = r.data
         render(currentState)
@@ -166,18 +172,18 @@ function main() {
         stateEvent.data = state
         csInterface.dispatchEvent(stateEvent)
 
-        console.log('[Main:dispatchStateEvent] Dispatched State')
+        childLogger.info('Dispatched State')
     }
 
     const dispatch = (msg) => {
-        console.log('[Main:dispatch] Got msg from View, updating state')
+        childLogger.info('Got msg from View, updating state')
 
         currentState = app.Update(msg, currentState)
         dispatchStateEvent(currentState)
     }
 
     const render = (state) => {
-        console.log('[Main:render] Rendering component')
+        childLogger.info('Rendering component')
         app.ViewRender(state, dispatch)
     }
 

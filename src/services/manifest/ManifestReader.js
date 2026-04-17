@@ -7,6 +7,7 @@ class ManifestReader {
     }
 
     load() {
+        // eslint-disable-next-line no-undef
         const path = this.csInterface.getSystemPath(SystemPath.EXTENSION)
         const manifestContent = fs.readFileSync(`${path}/CSXS/manifest.xml`, 'utf8');
 

@@ -1,7 +1,9 @@
+import { Logger } from "../../logger/logger"
 import ConfigReader from "../config/configReader"
 
 class AdobeApp {
     constructor() {
+        this.logger = new Logger('AdobeApp')
         this.ConfigReader = new ConfigReader()
         this.csInterface = new CSInterface()
 
@@ -9,7 +11,7 @@ class AdobeApp {
         this.appName = null
         this.appImg = null
 
-        console.log('[AdobeApp] AdobeApp Initialized.')
+        this.logger.info('AdobeApp Initialized.')
     }
 
     load() {
@@ -24,9 +26,9 @@ class AdobeApp {
             this.appName = this.adobeAppConfig.name
             this.appImg = this.adobeAppConfig.img
 
-            console.log('[AdobeApp:load] loaded App with AppCode : ' + appCode)
+            this.logger.info('loaded App with AppCode : ' + appCode)
         } catch (e) {
-            console.log('[AdobeApp:load] Failed while load the app configuration : ' + e)
+            this.logger.info('Failed while load the app configuration : ' + e)
             return
         }
     }
