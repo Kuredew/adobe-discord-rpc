@@ -16,6 +16,7 @@ const toggleDetails = document.getElementById('toggle-details');
 const toggleState = document.getElementById('toggle-state');
 
 const openMoreSettingsWindowButton = document.getElementById('more-button');
+const openLogsFolderButton = document.getElementById('logs-folder');
 const moreSettingsWindow = document.getElementById('more-container');
 const closeMoreSettingsWindowButton = document.getElementById('close-more-window-button');
 
@@ -25,7 +26,13 @@ const customImageURL = document.getElementById('custom-image-url')
 const toggleCustomPrefix = document.getElementById('toggle-custom-prefix')
 const customPrefixStr = document.getElementById('custom-prefix-str')
 
-const logger = new Logger('View')
+const logger = new Logger(
+    csInterface,
+    'view-log',
+    {
+        label: 'View'
+    }
+)
 
 // ELM Arch in js yeah
 class App {
@@ -38,6 +45,7 @@ class App {
             showDetailsChange: 'DETAILS_CHANGE',
 
             openMoreSettingsWindowClick: "OPEN_MORE_SETTINGS_WINDOW_CLICK",
+            openLogsFolderClick: "OPEN_LOGS_FOLDER_CLICK",
             closeMoreSettingsWindowClick: "CLOSE_MORE_SETTINGS_WINDOW_CLICK",
 
             customImageChange: 'CUSTOM_IMAGE_CHANGE',
@@ -61,6 +69,9 @@ class App {
                 break
             case this.Msg.openMoreSettingsWindowClick:
                 newModel.showMoreSettingsWindow = true
+                break
+            case this.Msg.openLogsFolderClick:
+                this.childLogger.openFolder()
                 break
             case this.Msg.closeMoreSettingsWindowClick:
                 newModel.showMoreSettingsWindow = false
@@ -128,6 +139,7 @@ class App {
         toggleDetails.onchange = () => dispatch({ type: this.Msg.showDetailsChange })
 
         openMoreSettingsWindowButton.onclick = () => dispatch({ type: this.Msg.openMoreSettingsWindowClick })
+        openLogsFolderButton.onclick = () => dispatch({ type: this.Msg.openLogsFolderClick })
         closeMoreSettingsWindowButton.onclick = () => dispatch({ type: this.Msg.closeMoreSettingsWindowClick })
         moreSettingsWindow.style.display = newState.showMoreSettingsWindow ? 'flex' : 'none'
 
@@ -154,7 +166,7 @@ class App {
 function main() {
     const childLogger = logger.child('Main')
     const app = new App()
-    const stateManager = new StateManager(localStorage)
+    const stateManager = new StateManager(localStorage, childLogger.child('StateManager'))
     stateManager.init()
 
     // we decided to use the state object instead of updating directly to the state class

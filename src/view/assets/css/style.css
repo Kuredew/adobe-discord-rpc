@@ -241,8 +241,17 @@ body {
 
 .more-section {
     opacity: 50%;
+    gap: 5px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+}
+
+.more-section .logs-folder {
+    font-size: 10px;
+    color: white;
+    cursor: pointer;
 }
 
 .more-section .more {
@@ -251,7 +260,7 @@ body {
     transition: 0.5s;
     /* text-decoration: underline; */
     /* text-underline-offset: 4px; */
-    width: fit-content;
+    width: 100%;
 }
 
 .more-section .more:hover {
