@@ -1,14 +1,13 @@
 import EventEmitter from "events"
-import { Logger } from "../../logger/logger"
 
 class StateEvent extends EventEmitter {
-    constructor(stateManager, csInterface) {
+    constructor({ stateManager, logger, csInterface, csEvent }) {
         super()
 
-        this.logger = new Logger('StateEvent')
+        this.logger = logger
         this.stateManager = stateManager
         this.csInterface = csInterface
-        this.stateEvent = new CSEvent('com.kureichi.rpc.state-from-backend', 'APPLICATION')
+        this.stateEvent = new csEvent('com.kureichi.rpc.state-from-backend', 'APPLICATION')
         
         this.stateManager.on('stateChange', (state) => this.dispatchEvent(state))
         

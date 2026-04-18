@@ -1,16 +1,13 @@
-import { Logger } from "../../logger/logger"
-import ManifestReader from "../manifest/ManifestReader"
-
 class VersionCheck {
-    constructor() {
-        this.logger = new Logger('VersionCheck')
+    constructor(manifestReader, logger) {
+        this.logger = logger
         this.isLatestVersion = null
         this.currentVersion = null
         this.currentVersionStr = null
 
         this.repoUrl = "https://api.github.com/repos/Kuredew/adobe-discord-rpc"
 
-        this.manifestReader = new ManifestReader()
+        this.manifestReader = manifestReader
     }
 
     async getVersion() {

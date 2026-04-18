@@ -1,11 +1,10 @@
 import fs from 'fs'
-import { Logger } from '../../logger/logger'
 
 class ConfigReader {
-    constructor() {
-        this.logger = new Logger('ConfigReader')
+    constructor(logger, csInterface) {
+        this.logger = logger
         this.config = null
-        this.csInterface = new CSInterface()
+        this.csInterface = csInterface
     }
 
     loadConfig() {

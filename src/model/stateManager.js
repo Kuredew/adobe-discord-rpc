@@ -1,10 +1,9 @@
 import EventEmitter from "events";
-import { Logger } from "../logger/logger";
 
 class StateManager extends EventEmitter {
-    constructor(localStorage) {
+    constructor(localStorage, logger) {
         super()
-        this.logger = new Logger('StateManager')
+        this.logger = logger
         this.localStorage = localStorage
         
         this.defaults = {

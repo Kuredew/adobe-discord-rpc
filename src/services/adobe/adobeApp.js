@@ -1,11 +1,8 @@
-import { Logger } from "../../logger/logger"
-import ConfigReader from "../config/configReader"
-
 class AdobeApp {
-    constructor() {
-        this.logger = new Logger('AdobeApp')
-        this.ConfigReader = new ConfigReader()
-        this.csInterface = new CSInterface()
+    constructor({ logger, configReader, csInterface }) {
+        this.logger = logger
+        this.ConfigReader = configReader
+        this.csInterface = csInterface
 
         this.clientId = null
         this.appName = null
