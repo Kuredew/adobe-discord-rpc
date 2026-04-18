@@ -1,4 +1,4 @@
-import build from "./utils/buildExtension.js";
+import { build } from "./utils/buildExtension.js";
 import { 
   bundleName, 
   outputCertPath, 
@@ -15,7 +15,7 @@ const log = (msg) => logger.log(msg)
 
 async function main() {
   log("Building Extension...")
-  build(outputExtensionFolderPath)
+  await build(outputExtensionFolderPath)
 
   log("Archiving Extension to ZIP...")
   archiveZip(outputExtensionFolderPath, outputExtensionZipPath, bundleName)
@@ -28,6 +28,7 @@ async function main() {
 
 try {
   await main()
+  process.exit(0)
 } catch (e) {
   logger.error(e.message)
 }

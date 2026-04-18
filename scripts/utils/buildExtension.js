@@ -1,21 +1,41 @@
-import { execSync } from 'child_process'
 import fs from 'fs'
 import Logger from './logger.js'
+import esbuild from 'esbuild'
 
 const logger = new Logger("buildExtension")
 const log = (msg) => logger.log(msg)
 
-let isCopied = false
-function build(outputExtensionFolder) {
-  try {
-    if (!isCopied) fs.rmSync(`${outputExtensionFolder}`, { recursive: true, force: true })
+const createContext = async (outputExtensionFolder) => {
+  return await esbuild.context({
+    entryPoints: [
+      './src/index.js',
+      './src/view/index.js'
+    ],
+    bundle: true,
+    outdir: outputExtensionFolder,
+    platform: 'node',
 
-    log(`Building extension to ${outputExtensionFolder}`)
-    execSync(`parcel build ./src/view/index.js ./src/index.js --no-source-maps --public-url ./ --dist-dir ${outputExtensionFolder}`, { stdio: "inherit" })
-    log('Done!')
+    plugins: [{
+      name: 'log-rebuild',
+      setup(build) {
+        let startTime;
+        build.onStart(() => {
+          startTime = Date.now();
+          log('Rebuilding...')
+        });
+        build.onEnd(result => {
+          if (result.errors.length > 0) {
+            logger.error(`Build failed: ${result.errors.length} error`)
+          } else {
+            log(`Build complete in ${Date.now() - startTime}ms`)
+          }
+        });
+      },
+    }],
+  })
+}
 
-    if (isCopied) return
-
+const copyDeps = (outputExtensionFolder) => {
     log(`Copying dependencies to ${outputExtensionFolder}`)
 
     log(`Copying assets...`)
@@ -41,11 +61,22 @@ function build(outputExtensionFolder) {
     fs.cpSync("./config.json", `${outputExtensionFolder}/config.json`)
 
     log('Successfully copied dependencies.')
+}
 
-    isCopied = true
+export const build = async (outputExtensionFolder, opts) => {
+  try {
+    fs.rmSync(`${outputExtensionFolder}`, { recursive: true, force: true })
+
+    copyDeps(outputExtensionFolder)
+    const buildContext = await createContext(outputExtensionFolder)
+    
+    if (opts?.watch) {
+      await buildContext.watch()
+    } else {
+      await buildContext.rebuild()
+    }
   } catch (e) {
+    // eslint-disable-next-line preserve-caught-error
     throw new Error(logger.parse(e.message))
   }
 }
-
-export default build
