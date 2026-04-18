@@ -1,9 +1,9 @@
 import fs from 'fs'
 
 class ManifestReader {
-    constructor() {
+    constructor(csInterface) {
         this.manifestVersion = null
-        this.csInterface = new CSInterface()
+        this.csInterface = csInterface
     }
 
     load() {

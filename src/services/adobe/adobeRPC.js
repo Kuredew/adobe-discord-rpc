@@ -1,18 +1,16 @@
 import { Client } from 'discord-rpc'
-import AdobeApp from './adobeApp'
 import EventEmitter from 'events'
-import { Logger } from '../../logger/logger'
 
 class AdobeRPC extends EventEmitter{
-    constructor(stateManager) {
+    constructor({stateManager, logger, adobeApp}) {
         super()
 
-        this.logger = new Logger('AdobeRPC')
+        this.logger = logger
         this.client = null
         this.callback = null
         this.interval = null
 
-        this.adobeApp = new AdobeApp()
+        this.adobeApp = adobeApp
         this.stateManager = stateManager
         this.getCurrentState = null
         this.startTimestamp = new Date()
