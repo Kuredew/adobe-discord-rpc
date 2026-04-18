@@ -1,3 +1,4 @@
+import { exec } from "child_process"
 import { appendFileSync, mkdirSync } from "fs"
 import path from "path"
 
@@ -13,7 +14,8 @@ export class Logger{
       'logs',
       `${outputFileName} (${this.date.getDate()}-${this.date.getMonth() + 1}-${this.date.getFullYear()}).txt`
     )
-    mkdirSync(path.dirname(this.outputFilePath), { recursive: true })
+    this.outputDirName = path.dirname(this.outputFilePath)
+    mkdirSync(this.outputDirName, { recursive: true })
 
     this.labelStr = `${label}: `
   }
@@ -40,5 +42,10 @@ export class Logger{
       label: `${this.labelStr}${label}`,
       date: this.date
     })
+  }
+  
+  openFolder() {
+    const command = process.platform === 'win32' ? `explorer "${this.outputDirName}"` : `open "${this.outputDirName}"`;
+    exec(command);
   }
 }
