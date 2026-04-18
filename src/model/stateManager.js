@@ -1,9 +1,10 @@
 import EventEmitter from "events";
+import { Logger } from "../logger/logger";
 
 class StateManager extends EventEmitter {
     constructor(localStorage) {
         super()
-        //localStorage.clear()
+        this.logger = new Logger('StateManager')
         this.localStorage = localStorage
         
         this.defaults = {
@@ -30,7 +31,7 @@ class StateManager extends EventEmitter {
     }
 
     init() {
-        console.log('[StateManager:init] Initializing...')
+        this.logger.info('Initializing...')
 
         const rawData = this.localStorage.getItem('data');
         let data = JSON.parse(rawData)
@@ -58,7 +59,7 @@ class StateManager extends EventEmitter {
             return false
         })
         keys.forEach((key) => {
-            console.log(`[stateManager:setState] State changed in '${key}' (${this.state[key]} -> ${newState[key]})`)
+            this.logger.info(`State changed in '${key}' (${this.state[key]} -> ${newState[key]})`)
         })
 
         // ignore emit stateChange if none state changed
@@ -74,7 +75,7 @@ class StateManager extends EventEmitter {
         const jsonStr = JSON.stringify(this.state)
         
         this.localStorage.setItem('data', jsonStr)
-        console.log(`[StateManager:updateLocalStorage] Updated localStorage state`)
+        this.logger.info(`Updated localStorage state`)
     }
 }
 

@@ -1,9 +1,11 @@
 import EventEmitter from "events"
+import { Logger } from "../../logger/logger"
 
 class StateEvent extends EventEmitter {
     constructor(stateManager, csInterface) {
         super()
 
+        this.logger = new Logger('StateEvent')
         this.stateManager = stateManager
         this.csInterface = csInterface
         this.stateEvent = new CSEvent('com.kureichi.rpc.state-from-backend', 'APPLICATION')
@@ -15,10 +17,10 @@ class StateEvent extends EventEmitter {
     registerListener() {
         this.csInterface.addEventListener('com.kureichi.rpc.get-state', () => this.dispatchEvent(this.stateManager.getState()))
 
-        console.log('[StateEvent:registerListener] Registered Listener Event.')
+        this.logger.info('Registered Listener Event.')
 
         this.csInterface.addEventListener('com.kureichi.rpc.state-from-view', (r) => {
-            console.log('[StateEvent:Listener] Got State from View')
+            this.logger.info('Got State from View')
             this.emit('stateFromView', r.data)
         })
     }
@@ -27,7 +29,7 @@ class StateEvent extends EventEmitter {
         this.stateEvent.data = JSON.stringify(state)
         this.csInterface.dispatchEvent(this.stateEvent)
 
-        console.log('[StateEvent:dispatchEvent] Dispatched event')
+        this.logger.info('Dispatched event')
     }
 }
 
