@@ -19,8 +19,14 @@ const getVersion = async ({
 }
 
 function main() {
-    const baseLogger = new Logger('Daemon')
     const csInterface = new CSInterface()
+    const baseLogger = new Logger(
+        csInterface,
+        'daemon-log',
+        {
+            label: 'Daemon'
+        }
+    )
 
     const configReader = new ConfigReader(baseLogger.child('ConfigReader'), csInterface)
     const stateManager = new StateManager(localStorage, baseLogger.child('stateManager'))

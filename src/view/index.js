@@ -25,7 +25,13 @@ const customImageURL = document.getElementById('custom-image-url')
 const toggleCustomPrefix = document.getElementById('toggle-custom-prefix')
 const customPrefixStr = document.getElementById('custom-prefix-str')
 
-const logger = new Logger('View')
+const logger = new Logger(
+    csInterface,
+    'view-log',
+    {
+        label: 'View'
+    }
+)
 
 // ELM Arch in js yeah
 class App {
@@ -154,7 +160,7 @@ class App {
 function main() {
     const childLogger = logger.child('Main')
     const app = new App()
-    const stateManager = new StateManager(localStorage)
+    const stateManager = new StateManager(localStorage, childLogger.child('StateManager'))
     stateManager.init()
 
     // we decided to use the state object instead of updating directly to the state class
