@@ -41,14 +41,17 @@ class AdobeRPC extends EventEmitter{
 
         const state = this.stateManager.getState()
         if (!state.power) {
-            this.emitConnection('disconnected')
             this.logger.warn('Power is OFF. login job aborted.')
+
+            this.emitConnection('disconnected')
             return
         }
 
         this.createNewClient()
 
         const reconnect = () => {
+            this.stopPolling()
+
             const state = this.stateManager.getState()
             if (state.power && !this.isReconnecting) {
                 this.logger.info(`Reconnecting RPC after 5 sec...`)
@@ -66,6 +69,7 @@ class AdobeRPC extends EventEmitter{
             }
 
             this.logger.warn('Aborted reconnect')
+            this.emitConnection('disconnected')
         }
 
         this.client.once("ready", () => {
@@ -76,10 +80,8 @@ class AdobeRPC extends EventEmitter{
             this.startPolling()
         })
         this.client.once("disconnected", () => {
-            reconnect()
-
             this.logger.info(`RPC Disconnected`)
-            this.emitConnection('disconnected')
+            reconnect()
         })
 
 
@@ -91,8 +93,6 @@ class AdobeRPC extends EventEmitter{
         }).catch((err) => {
             this.logger.error(`Error while trying to login : ${err}`)
             reconnect()
-
-            this.emitConnection('disconnected')
         })
     }
 
@@ -104,7 +104,7 @@ class AdobeRPC extends EventEmitter{
         }).catch((err) => {
             this.logger.error('Error while trying to logout: ' + err)
         }).finally(() => {
-            clearInterval(this.interval)
+            this.stopPolling()
             this.emitConnection('disconnected')
         })
         
@@ -175,6 +175,8 @@ class AdobeRPC extends EventEmitter{
     }
     
     startPolling() {
+        this.stopPolling()
+
         const funcs = [
             { props: 'rpcDetails', func: 'getDetails()' },
             { props: 'rpcState', func: 'getState()' },
@@ -183,9 +185,10 @@ class AdobeRPC extends EventEmitter{
             { props: 'rpcPartyMax', func: 'getPartyMax()' },
         ]
 
-        this.interval = setInterval(async () => {
-            let isChanged = false
+        const poll = async () => {
+            const currentId = this.interval
 
+            let isChanged = false
             const state = this.stateManager.getState()
             const responses = []
             
@@ -206,9 +209,28 @@ class AdobeRPC extends EventEmitter{
             if (isChanged) {
                 this.emit('adobeInfoChange', adobeInfo)
             }
-        }, 1000)
+            
+            if (this.interval === currentId) {
+                this.interval = setTimeout(poll, 1000)                
+            } else {
+                this.logger.warn('Polling schedule eliminated due to interval ID mismatch')
+            }
+        }
 
-        this.logger.info('Polling Started')
+        this.interval = setTimeout(poll, 1000)
+        this.logger.info('Polling schedule created')
+    }
+    
+    stopPolling() {
+        if (!this.interval) {
+            this.logger.warn('Stop polling aborted because interval is already null')
+            return
+        }
+        
+        this.logger.info(`Stopping polling with ID: ${this.interval}`)
+        clearTimeout(this.interval)
+        this.interval = null
+        this.logger.info('Polling stopped')
     }
 
     reload(state) {
