@@ -20,6 +20,9 @@ class StateManager extends EventEmitter {
             showDetails: true,
             showState: true,
             showMoreSettingsWindow: false,
+            privacyMode: false,
+            customStateStr: null,
+            customDetailsStr: null,
             customImage: false,
             customImageURL: null,
             customPrefix: false,
@@ -44,6 +47,8 @@ class StateManager extends EventEmitter {
                 this.state[key] = this.defaults[key]
             }
         }
+        
+        this.logger.info('State Initialized, Last State: ' + JSON.stringify(this.state, null, 2))
     }
 
     getState() {

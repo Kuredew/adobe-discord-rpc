@@ -118,39 +118,22 @@ class AdobeRPC extends EventEmitter{
         }
 
         if (state.rpcDetails && state.showDetails) {
-            activity.details = state.rpcDetails;
+            activity.details = state.privacyMode ? state.customDetailsStr || "[Redacted]" : state.rpcDetails
         }
 
         if (state.rpcState && state.showState) {
-            let stateStr = ""
+            const prefix = state.customPrefix ? state.customPrefixStr : "Working on"
+            const stateStr = state.privacyMode ? state.customStateStr || "Private" : state.rpcState
 
-            if (state.customPrefix && state.customPrefixStr) {
-                stateStr += state.customPrefixStr + " "
-            } else {
-                stateStr += "Working on "
-            }
-
-            if (state.rpcState === 'Idling.') {
-                stateStr = state.rpcState
-            } else {
-                stateStr += state.rpcState
-            }
-
-            activity.state = stateStr;
+            activity.state = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`;
         }
 
-        if (state.rpcSmallImageKey) {
-            activity.smallImageKey = state.rpcSmallImageKey
-        }
+        activity.smallImageKey = state.rpcSmallImageKey
 
-        if (state.rpcPartySize && state.rpcPartyMax) {
-            activity.partySize = parseInt(state.rpcPartySize)
-            activity.partyMax = parseInt(state.rpcPartyMax)
-        }
+        activity.partySize = parseInt(state.rpcPartySize)
+        activity.partyMax = parseInt(state.rpcPartyMax)
 
-        if (state.customImage && state.customImageURL) {
-            activity.largeImageKey = state.customImageURL
-        }
+        state.customImage ? activity.largeImageKey = state.customImageURL : null
 
         if (this.lastActivityInfo && JSON.stringify(this.lastActivityInfo) === JSON.stringify(activity)) {
             this.logger.warn('Aborted setActivity request')
