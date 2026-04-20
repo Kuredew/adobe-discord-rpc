@@ -20,6 +20,10 @@ const openLogsFolderButton = document.getElementById('logs-folder');
 const moreSettingsWindow = document.getElementById('more-container');
 const closeMoreSettingsWindowButton = document.getElementById('close-more-window-button');
 
+const togglePrivacyMode = document.getElementById('toggle-privacy-mode')
+const customStateStr = document.getElementById('custom-state')
+const customDetailsStr = document.getElementById('custom-details')
+
 const toggleCustomImage = document.getElementById('toggle-custom-image')
 const customImageURL = document.getElementById('custom-image-url')
 
@@ -48,6 +52,10 @@ class App {
             openLogsFolderClick: "OPEN_LOGS_FOLDER_CLICK",
             closeMoreSettingsWindowClick: "CLOSE_MORE_SETTINGS_WINDOW_CLICK",
 
+            privacyModeToggleChange: 'PRIVACY_MODE_TOGGLE_CHANGE',
+            customStateStrChange: 'CUSTOM_STATE_STR_CHANGE',
+            customDetailsStrChange: 'CUSTOM_DETAILS_STR_CHANGE',
+
             customImageChange: 'CUSTOM_IMAGE_CHANGE',
             customImageURLChange: 'CUSTOM_IMAGE_URL_CHANGE',
             customPrefixChange: 'CUSTOM_PREFIX_CHANGE',
@@ -75,6 +83,15 @@ class App {
                 break
             case this.Msg.closeMoreSettingsWindowClick:
                 newModel.showMoreSettingsWindow = false
+                break
+            case this.Msg.privacyModeToggleChange:
+                newModel.privacyMode = togglePrivacyMode.checked
+                break
+            case this.Msg.customStateStrChange:
+                newModel.customStateStr = customStateStr.value
+                break
+            case this.Msg.customDetailsStrChange:
+                newModel.customDetailsStr = customDetailsStr.value
                 break
             case this.Msg.customImageChange:
                 newModel.customImage = toggleCustomImage.checked
@@ -140,18 +157,32 @@ class App {
 
         openMoreSettingsWindowButton.onclick = () => dispatch({ type: this.Msg.openMoreSettingsWindowClick })
         openLogsFolderButton.onclick = () => dispatch({ type: this.Msg.openLogsFolderClick })
+
         closeMoreSettingsWindowButton.onclick = () => dispatch({ type: this.Msg.closeMoreSettingsWindowClick })
         moreSettingsWindow.style.display = newState.showMoreSettingsWindow ? 'flex' : 'none'
+        
+        togglePrivacyMode.checked = newState.privacyMode
+        togglePrivacyMode.onchange = () => dispatch({ type: this.Msg.privacyModeToggleChange })
+
+        customStateStr.disabled = !togglePrivacyMode.checked
+        customStateStr.value = newState.customStateStr
+        customStateStr.onchange = () => dispatch({ type: this.Msg.customStateStrChange })
+
+        customDetailsStr.disabled = !togglePrivacyMode.checked
+        customDetailsStr.value = newState.customDetailsStr
+        customDetailsStr.onchange = () => dispatch({ type: this.Msg.customDetailsStrChange })
 
         toggleCustomImage.checked = newState.customImage
         toggleCustomImage.onchange = () => dispatch({ type: this.Msg.customImageChange })
 
+        customImageURL.disabled = !toggleCustomImage.checked
         customImageURL.value = newState.customImageURL
         customImageURL.onchange = () => dispatch({ type: this.Msg.customImageURLChange })
 
         toggleCustomPrefix.checked = newState.customPrefix
         toggleCustomPrefix.onchange = () => dispatch({ type: this.Msg.customPrefixChange })
 
+        customPrefixStr.disabled = !toggleCustomPrefix.checked
         customPrefixStr.value = newState.customPrefixStr
         customPrefixStr.onchange = () => dispatch({ type: this.Msg.customPrefixStrChange })
 
