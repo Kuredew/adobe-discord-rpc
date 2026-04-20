@@ -165,10 +165,12 @@ class App {
         togglePrivacyMode.onchange = () => dispatch({ type: this.Msg.privacyModeToggleChange })
 
         customStateStr.disabled = !togglePrivacyMode.checked
+        !togglePrivacyMode.checked ? customStateStr.classList.add('disabled') : customStateStr.classList.remove('disabled')
         customStateStr.value = newState.customStateStr
         customStateStr.onchange = () => dispatch({ type: this.Msg.customStateStrChange })
 
         customDetailsStr.disabled = !togglePrivacyMode.checked
+        !togglePrivacyMode.checked ? customDetailsStr.classList.add('disabled') : customDetailsStr.classList.remove('disabled')
         customDetailsStr.value = newState.customDetailsStr
         customDetailsStr.onchange = () => dispatch({ type: this.Msg.customDetailsStrChange })
 
@@ -176,6 +178,7 @@ class App {
         toggleCustomImage.onchange = () => dispatch({ type: this.Msg.customImageChange })
 
         customImageURL.disabled = !toggleCustomImage.checked
+        !toggleCustomImage.checked ? customImageURL.classList.add('disabled') : customImageURL.classList.remove('disabled')
         customImageURL.value = newState.customImageURL
         customImageURL.onchange = () => dispatch({ type: this.Msg.customImageURLChange })
 
@@ -183,6 +186,7 @@ class App {
         toggleCustomPrefix.onchange = () => dispatch({ type: this.Msg.customPrefixChange })
 
         customPrefixStr.disabled = !toggleCustomPrefix.checked
+        !toggleCustomPrefix.checked ? customPrefixStr.classList.add('disabled') : customPrefixStr.classList.remove('disabled')
         customPrefixStr.value = newState.customPrefixStr
         customPrefixStr.onchange = () => dispatch({ type: this.Msg.customPrefixStrChange })
 
