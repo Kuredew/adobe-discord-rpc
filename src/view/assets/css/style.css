@@ -28,6 +28,10 @@ body {
     font-family: samsung-sharp-regular;
 }
 
+.disabled {
+    opacity: 50%;
+}
+
 .panel {
     width: 100%;
     max-width: 280px;
