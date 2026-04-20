@@ -1,421 +1,488 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <ExtensionManifest Version="7.0"
-
-    ExtensionBundleId="com.kureichi.discordrpc"
-
-    ExtensionBundleVersion="3.0.0"
-
-    ExtensionBundleName="Kureichi RPC">
-
-
+  ExtensionBundleId="com.kureichi.discordrpc"
+  ExtensionBundleVersion="3.0.0"
+  ExtensionBundleName="Kureichi RPC">
 
   <ExtensionList>
-
-    <Extension Id="com.kureichi.discordrpc.panel" Version="1.0.0"/>
-
-    <Extension Id="com.kureichi.discordrpc.after-effect" Version="1.0.0"/>
-
-    <Extension Id="com.kureichi.discordrpc.photoshop" Version="1.0.0"/>
-
-    <Extension Id="com.kureichi.discordrpc.photoshop-extended" Version="1.0.0"/>
-
-    <Extension Id="com.kureichi.discordrpc.premiere-pro" Version="1.0.0"/>
-
+    <Extension Id="com.kureichi.discordrpc.panel" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.after-effect" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.photoshop" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.photoshop-extended" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.premiere-pro" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.animate" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.audition" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.dreamweaver" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.illustrator" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.incopy" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.indesign" Version="1.0.0" />
+    <Extension Id="com.kureichi.discordrpc.prelude" Version="1.0.0" />
   </ExtensionList>
 
-
-
   <ExecutionEnvironment>
-
     <HostList>
-
-      <Host Name="AEFT" Version="[0.0,99.9]"/>
-
-      <Host Name="PHSP" Version="[0.0,99.9]"/>
-
-      <Host Name="PHXS" Version="[0.0,99.9]"/>
-
-      <Host Name="PPRO" Version="[0.0,99.9]"/>
-
+      <Host Name="AEFT" Version="[0.0,99.9]" />
+      <Host Name="PHSP" Version="[0.0,99.9]" />
+      <Host Name="PHXS" Version="[0.0,99.9]" />
+      <Host Name="PPRO" Version="[0.0,99.9]" />
+      <Host Name="AICY" Version="[0.0,99.9]" />
+      <Host Name="AUDT" Version="[0.0,99.9]" />
+      <Host Name="DRWV" Version="[0.0,99.9]" />
+      <Host Name="FLPR" Version="[0.0,99.9]" />
+      <Host Name="IDSN" Version="[0.0,99.9]" />
+      <Host Name="ILST" Version="[0.0,99.9]" />
+      <Host Name="PRLD" Version="[0.0,99.9]" />
     </HostList>
-
     <LocaleList>
-
-      <Locale Code="All"/>
-
+      <Locale Code="All" />
     </LocaleList>
-
     <RequiredRuntimeList>
-
-      <RequiredRuntime Name="CSXS" Version="8.0"/>
-
+      <RequiredRuntime Name="CSXS" Version="8.0" />
     </RequiredRuntimeList>
-
   </ExecutionEnvironment>
 
-
-
   <DispatchInfoList>
-
-
-
     <Extension Id="com.kureichi.discordrpc.panel">
-
       <DispatchInfo>
-
         <Resources>
-
           <MainPath>./view/index.html</MainPath>
-
           <CEFCommandLine>
-
             <Parameter>--enable-nodejs</Parameter>
-
             <Parameter>--mixed-context</Parameter>
-
           </CEFCommandLine>
-
         </Resources>
-
         <Lifecycle>
-
           <AutoVisible>true</AutoVisible>
-
         </Lifecycle>
-
         <UI>
-
           <Type>Panel</Type>
-
           <Menu>Discord RPC</Menu>
-
           <Geometry>
-
             <Size>
-
               <Width>400</Width>
-
               <Height>300</Height>
-
             </Size>
-
           </Geometry>
-
         </UI>
-
       </DispatchInfo>
-
     </Extension>
-
-
 
     <Extension Id="com.kureichi.discordrpc.after-effect">
-
       <HostList>
-
         <Host Name="AEFT" />
-
       </HostList>
-
       <DispatchInfo>
-
         <Resources>
-
           <MainPath>./index.html</MainPath>
-
           <ScriptPath>./jsx/AEFT.jsx</ScriptPath>
-
           <CEFCommandLine>
-
             <Parameter>--allow-file-access</Parameter>
-
             <Parameter>--allow-file-access-from-files</Parameter>
-
             <Parameter>--disable-application-cache</Parameter>
-
             <Parameter>--enable-nodejs</Parameter>
-
             <Parameter>--mixed-context</Parameter>
-
           </CEFCommandLine>
-
         </Resources>
-
         <Lifecycle>
-
           <AutoVisible>false</AutoVisible>
-
           <StartOn>
-
             <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
-
             <Event>applicationActivate</Event>
-
             <Event>com.adobe.csxs.events.ApplicationActivate</Event>
-
             <Event>com.adobe.events.flash.documentChanged</Event>
-
             <Event>com.kureichi.rpc.ready</Event>
-
           </StartOn>
-
         </Lifecycle>
-
         <UI>
-
           <Type>Custom</Type>
-
           <Geometry>
-
             <Size>
-
               <Width>500</Width>
-
               <Height>500</Height>
-
             </Size>
-
           </Geometry>
-
         </UI>
-
       </DispatchInfo>
-
     </Extension>
-
-
 
     <Extension Id="com.kureichi.discordrpc.photoshop">
-
       <HostList>
-
         <Host Name="PHSP" />
-
       </HostList>
-
       <DispatchInfo>
-
         <Resources>
-
           <MainPath>./index.html</MainPath>
-
           <ScriptPath>./jsx/PHSP.jsx</ScriptPath>
-
           <CEFCommandLine>
-
             <Parameter>--allow-file-access</Parameter>
-
             <Parameter>--allow-file-access-from-files</Parameter>
-
             <Parameter>--disable-application-cache</Parameter>
-
             <Parameter>--enable-nodejs</Parameter>
-
             <Parameter>--mixed-context</Parameter>
-
           </CEFCommandLine>
-
         </Resources>
-
         <Lifecycle>
-
           <AutoVisible>false</AutoVisible>
-
           <StartOn>
-
             <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
-
             <Event>applicationActivate</Event>
-
             <Event>com.adobe.csxs.events.ApplicationActivate</Event>
-
             <Event>com.adobe.events.flash.documentChanged</Event>
-
             <Event>com.kureichi.rpc.ready</Event>
-
           </StartOn>
-
         </Lifecycle>
-
         <UI>
-
           <Type>Custom</Type>
-
           <Geometry>
-
             <Size>
-
               <Width>500</Width>
-
               <Height>500</Height>
-
             </Size>
-
           </Geometry>
-
         </UI>
-
       </DispatchInfo>
-
     </Extension>
-
-
 
     <Extension Id="com.kureichi.discordrpc.photoshop-extended">
-
       <HostList>
-
         <Host Name="PHXS" />
-
       </HostList>
-
       <DispatchInfo>
-
         <Resources>
-
           <MainPath>./index.html</MainPath>
-
           <ScriptPath>./jsx/PHXS.jsx</ScriptPath>
-
           <CEFCommandLine>
-
             <Parameter>--allow-file-access</Parameter>
-
             <Parameter>--allow-file-access-from-files</Parameter>
-
             <Parameter>--disable-application-cache</Parameter>
-
             <Parameter>--enable-nodejs</Parameter>
-
             <Parameter>--mixed-context</Parameter>
-
           </CEFCommandLine>
-
         </Resources>
-
         <Lifecycle>
-
           <AutoVisible>false</AutoVisible>
-
           <StartOn>
-
             <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
-
             <Event>applicationActivate</Event>
-
             <Event>com.adobe.csxs.events.ApplicationActivate</Event>
-
             <Event>com.adobe.events.flash.documentChanged</Event>
-
             <Event>com.kureichi.rpc.ready</Event>
-
           </StartOn>
-
         </Lifecycle>
-
         <UI>
-
           <Type>Custom</Type>
-
           <Geometry>
-
             <Size>
-
               <Width>500</Width>
-
               <Height>500</Height>
-
             </Size>
-
           </Geometry>
-
         </UI>
-
       </DispatchInfo>
-
     </Extension>
-
-
 
     <Extension Id="com.kureichi.discordrpc.premiere-pro">
-
       <HostList>
-
         <Host Name="PPRO" />
-
       </HostList>
-
       <DispatchInfo>
-
         <Resources>
-
           <MainPath>./index.html</MainPath>
-
           <ScriptPath>./jsx/PPRO.jsx</ScriptPath>
-
           <CEFCommandLine>
-
             <Parameter>--allow-file-access</Parameter>
-
             <Parameter>--allow-file-access-from-files</Parameter>
-
             <Parameter>--disable-application-cache</Parameter>
-
             <Parameter>--enable-nodejs</Parameter>
-
             <Parameter>--mixed-context</Parameter>
-
           </CEFCommandLine>
-
         </Resources>
-
         <Lifecycle>
-
           <AutoVisible>false</AutoVisible>
-
           <StartOn>
-
             <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
-
             <Event>applicationActivate</Event>
-
             <Event>com.adobe.csxs.events.ApplicationActivate</Event>
-
             <Event>com.adobe.events.flash.documentChanged</Event>
-
             <Event>com.kureichi.rpc.ready</Event>
-
           </StartOn>
-
         </Lifecycle>
-
         <UI>
-
           <Type>Custom</Type>
-
           <Geometry>
-
             <Size>
-
               <Width>500</Width>
-
               <Height>500</Height>
-
             </Size>
-
           </Geometry>
-
         </UI>
-
       </DispatchInfo>
-
     </Extension>
 
-    
+    <Extension Id="com.kureichi.discordrpc.incopy">
+      <HostList>
+        <Host Name="AICY" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/AICY.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
 
+    <Extension Id="com.kureichi.discordrpc.audition">
+      <HostList>
+        <Host Name="AUDT" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/AUDT.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.dreamweaver">
+      <HostList>
+        <Host Name="DRVW" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/DRVW.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.animate">
+      <HostList>
+        <Host Name="FLPR" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/FLPR.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.indesign">
+      <HostList>
+        <Host Name="IDSN" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/IDSN.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.illustrator">
+      <HostList>
+        <Host Name="ILST" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/ILST.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+    <Extension Id="com.kureichi.discordrpc.prelude">
+      <HostList>
+        <Host Name="PRLD" />
+      </HostList>
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/PRLD.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--allow-file-access</Parameter>
+            <Parameter>--allow-file-access-from-files</Parameter>
+            <Parameter>--disable-application-cache</Parameter>
+            <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>false</AutoVisible>
+          <StartOn>
+            <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+            <Event>applicationActivate</Event>
+            <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+            <Event>com.adobe.events.flash.documentChanged</Event>
+            <Event>com.kureichi.rpc.ready</Event>
+          </StartOn>
+        </Lifecycle>
+        <UI>
+          <Type>Custom</Type>
+          <Geometry>
+            <Size>
+              <Width>500</Width>
+              <Height>500</Height>
+            </Size>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
   </DispatchInfoList>
-
-
-
 </ExtensionManifest>
