@@ -6,7 +6,6 @@ class AdobeApp {
 
         this.clientId = null
         this.appName = null
-        this.appImg = null
 
         this.logger.info('AdobeApp Initialized.')
     }
@@ -21,7 +20,6 @@ class AdobeApp {
             this.adobeAppConfig = config[appCode]
             this.clientId = this.adobeAppConfig.id
             this.appName = this.adobeAppConfig.name
-            this.appImg = this.adobeAppConfig.img
 
             this.logger.info('loaded App with AppCode : ' + appCode)
         } catch (e) {

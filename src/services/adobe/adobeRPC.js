@@ -113,7 +113,6 @@ class AdobeRPC extends EventEmitter{
     setActivity(state) {
         const activity = {
             startTimestamp: this.startTimestamp,
-            // largeImageKey: this.adobeApp.appImg,
             largeImageText: this.adobeApp.appName,
         }
 
