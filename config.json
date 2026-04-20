@@ -1,22 +1,46 @@
 {
     "AEFT": {
         "id": "1387049921982501055",
-        "name": "Adobe After Effects",
-        "img": "https://res.cloudinary.com/ddsuizdgf/image/upload/v1750852817/adobe-after-effects-icon_m2za1h.png"
+        "name": "Adobe After Effects"
     },
     "PHSP": {
         "id": "1388901117156393171",
-        "name": "Adobe Photoshop",
-        "img": "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751211160/photoshop_yxrikc.png"
+        "name": "Adobe Photoshop"
     },
     "PHXS": {
         "id": "1388901117156393171",
-        "name": "Adobe Photoshop",
-        "img": "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751211160/photoshop_yxrikc.png"
+        "name": "Adobe Photoshop"
     },
     "PPRO": {
         "id": "1389140344565923901",
-        "name": "Adobe Premiere Pro",
-        "img": "https://res.cloudinary.com/ddsuizdgf/image/upload/v1751267418/premiere_khquqe.png"
+        "name": "Adobe Premiere Pro"
+    },
+    "AICY": {
+        "id": "1495743434110275624",
+        "name": "Adobe InCopy"
+    },
+    "FLPR": {
+        "id": "1495742731799101470",
+        "name": "Adobe Animate"
+    },
+    "AUDT": {
+        "id": "1495742920739917834",
+        "name": "Adobe Audition"
+    },
+    "DRWV": {
+        "id": "1495743126101426257",
+        "name": "Adobe Dreamweaver"
+    },
+    "ILST": {
+        "id": "1495743292497727558",
+        "name": "Adobe Illustrator"
+    },
+    "IDSN": {
+        "id": "1495743583741939843",
+        "name": "Adobe InDesign"
+    },
+    "PRLD": {
+        "id": "1495743711181803590",
+        "name": "Adobe Prelude"
     }
 }
