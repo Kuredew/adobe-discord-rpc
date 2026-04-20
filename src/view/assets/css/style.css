@@ -162,13 +162,13 @@ body {
 .options-container {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 20px;
 }
 
 .option-item {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
 }
 
 .option-item .toggle-input {
@@ -188,15 +188,38 @@ body {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+.options-note {
+    text-align: center;
+    font-size: 10px;
+    opacity: 50%;
+}
+
 .toggle-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.toggle-label .label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toggle-label .label .title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    cursor: pointer;
-    font-family: samsung-sharp-regular;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.85);
+}
+
+.toggle-label .label .description {
+    font-size: 10px;
+    opacity: 50%;
 }
 
 .toggle-label span:first-child {
@@ -209,7 +232,7 @@ body {
 
 .toggle-slider {
     position: relative;
-    width: 42px;
+    min-width: 42px;
     height: 22px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 22px;
@@ -270,7 +293,7 @@ body {
 
 .more-container {
     position: absolute;
-    display: none;
+    display: flex;
     top: 0;
     left: 0;
     width: 100vw;
@@ -337,6 +360,9 @@ body {
 }
 
 .more-container .window .window-field {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
     padding: 15px;
 }
 

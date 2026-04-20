@@ -63,21 +63,31 @@
                     <div class="options-container">
                         <div class="option-item">
                             <label class="toggle-label">
-                                <span>Custom Image</span>
+                                <div class="label">
+                                    <p class="title">Custom Icon</p>
+                                    <p class="description">Replace the Adobe app icon with an image from a custom URL</p>
+                                </div>
                                 <input type="checkbox" id="toggle-custom-image">
                                 <span class="toggle-slider"></span>
                             </label>
                             <input id="custom-image-url" type="text" class="toggle-input"
-                                placeholder="https://your-image-url.com/image.png">
+                                placeholder="https://your-image-url.com/image.png" disabled>
                         </div>
                         <div class="option-item">
                             <label class="toggle-label">
-                                <span>Custom Prefix</span>
+                                <div class="label">
+                                    <p class="title">Custom Prefix</p>
+                                    <p class="description">Change the default 'Working on' prefix in status details.</p>
+                                </div>
                                 <input type="checkbox" id="toggle-custom-prefix">
                                 <span class="toggle-slider"></span>
                             </label>
-                            <input id="custom-prefix-str" type="text" class="toggle-input" placeholder="Working on ">
+                            <input id="custom-prefix-str" type="text" class="toggle-input" placeholder="Working on" disabled>
                         </div>
+                    </div>
+                    
+                    <div class="options-note">
+                        Settings are applied automatically. RPC will reload immediately.
                     </div>
                 </div>
             </div>
