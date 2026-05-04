@@ -1,30 +1,31 @@
 import fs from 'fs'
 
 class ConfigReader {
-    constructor(logger, csInterface) {
-        this.logger = logger
-        this.config = null
-        this.csInterface = csInterface
-    }
+  constructor(logger, csInterface, extensionPath) {
+    this.logger = logger
+    this.config = null
+    this.csInterface = csInterface
+    this.extensionPath = extensionPath
+  }
 
-    loadConfig() {
-        try {
-            // eslint-disable-next-line no-undef
-            const path = this.csInterface.getSystemPath(SystemPath.EXTENSION)
-            const rawConfig = fs.readFileSync(`${path}/config.json`, { encoding: 'utf-8' })
-            
-            this.config = JSON.parse(rawConfig)
+  loadConfig() {
+    try {
+      // eslint-disable-next-line no-undef
+      const path = this.csInterface.getSystemPath(this.extensionPath)
+      const rawConfig = fs.readFileSync(`${path}/config.json`, { encoding: 'utf-8' })
 
-            this.logger.info('Configuration loaded!')
-        } catch (e) {
-            this.logger.info('Error! failed to read config : ' + e)
-            // console.log(process.cwd())
-        }
-    }
+      this.config = JSON.parse(rawConfig)
 
-    getConfig() {
-        return this.config
+      this.logger.info('Configuration loaded!')
+    } catch (e) {
+      this.logger.info('Error! failed to read config : ' + e)
+      // console.log(process.cwd())
     }
+  }
+
+  getConfig() {
+    return this.config
+  }
 }
 
 export default ConfigReader

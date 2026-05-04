@@ -11,6 +11,9 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
+      csinterface-ts:
+        specifier: ^1.0.3
+        version: 1.0.3
       discord-rpc:
         specifier: ^4.0.1
         version: 4.0.1
@@ -979,6 +982,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csinterface-ts@1.0.3:
+    resolution: {integrity: sha512-6vbWav/DLzq80mogkaFKp7iEH3DeJNKiBnMRcgJhceFUv7zJ+QKHrqlXFEcOdcqo0tWQHRZuM8gi4QN9p5ykqw==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -2810,6 +2816,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  csinterface-ts@1.0.3: {}
 
   debug@4.4.3:
     dependencies:

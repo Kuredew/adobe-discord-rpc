@@ -2,124 +2,122 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord RPC</title>
-    <link rel="stylesheet" href="./assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord RPC</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
 <body>
-    <div class="panel">
-        <div class="header">
-            <h1>Discord RPC</h1>
-            <p class="version" id="version">Checking Version...</p>
-        </div>
-
-        <div class="status-section">
-            <div class="status-indicator">
-                <span class="status-dot" id="status-dot"></span>
-                <span id="state" class="state">-</span>
-            </div>
-            <button id="button">Please Wait</button>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="options-container">
-            <div class="option-item">
-                <label class="toggle-label">
-                    <div class="label">
-                        <p class="title">Show Details</p>
-                    </div>
-                    <input type="checkbox" id="toggle-details" checked>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-            <div class="option-item">
-                <label class="toggle-label">
-                    <div class="label">
-                        <p class="title">Show State</p>
-                    </div>
-                    <input type="checkbox" id="toggle-state" checked>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <div class="more-section">
-            <button id="more-button" class="more">More</button>
-            <p id="logs-folder" class="logs-folder">
-                Open Logs Folder
-            </p>
-        </div>
-
-        <div id="more-container" class="more-container">
-            <div class="window">
-                <div class="window-decoration">
-                    <div class="items">
-                        <div id="close-more-window-button" class="item close-window-decoration"></div>
-                        <div id="max-more-window-button" class="item max-window-decoration"></div>
-                        <div id="min-more-window-button" class="item min-window-decoration"></div>
-                    </div>
-                    <div class="title">More Settings</div>
-                </div>
-                <div class="window-field">
-                    <div class="options-container">
-                        <div class="option-item">
-                            <label class="toggle-label">
-                                <div class="label">
-                                    <p class="title">Privacy / NDA Mode</p>
-                                    <p class="description">Censor project names and details. Leave blank to use default placeholder.</p>
-                                </div>
-                                <input type="checkbox" id="toggle-privacy-mode">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <input id="custom-details" type="text" class="toggle-input"
-                                placeholder="Project Name" disabled>
-                            <input id="custom-state" type="text" class="toggle-input"
-                                placeholder="Details" disabled>
-                        </div>
-                        <div class="option-item">
-                            <label class="toggle-label">
-                                <div class="label">
-                                    <p class="title">Custom Icon</p>
-                                    <p class="description">Replace the Adobe app icon with an image from a custom URL</p>
-                                </div>
-                                <input type="checkbox" id="toggle-custom-image">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <input id="custom-image-url" type="text" class="toggle-input"
-                                placeholder="https://your-image-url.com/image.png" disabled>
-                        </div>
-                        <div class="option-item">
-                            <label class="toggle-label">
-                                <div class="label">
-                                    <p class="title">Custom Prefix</p>
-                                    <p class="description">Change the default 'Working on' prefix in status details.</p>
-                                </div>
-                                <input type="checkbox" id="toggle-custom-prefix">
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <input id="custom-prefix-str" type="text" class="toggle-input" placeholder="Working on" disabled>
-                        </div>
-                    </div>
-                    
-                    <div class="options-note">
-                        Settings are applied automatically. RPC will reload immediately.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
-            <p class="contributor">contributions by <a href="https://github.com/omaralhami"
-                    class="contributor-name">mar</a></p>
-        </div>
-
+  <div class="panel">
+    <div class="header">
+      <h1>Discord RPC</h1>
+      <p class="version" id="version">Checking Version...</p>
     </div>
-    <script src="../libs/CSInterface.js"></script>
-    <script src="./index.js"></script>
+
+    <div class="status-section">
+      <div class="status-indicator">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="state" class="state">-</span>
+      </div>
+      <button id="button">Please Wait</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="options-container">
+      <div class="option-item">
+        <label class="toggle-label">
+          <div class="label">
+            <p class="title">Show Details</p>
+          </div>
+          <input type="checkbox" id="toggle-details" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="option-item">
+        <label class="toggle-label">
+          <div class="label">
+            <p class="title">Show State</p>
+          </div>
+          <input type="checkbox" id="toggle-state" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="more-section">
+      <button id="more-button" class="more">More</button>
+      <p id="logs-folder" class="logs-folder">
+        Open Logs Folder
+      </p>
+    </div>
+
+    <div id="more-container" class="more-container">
+      <div class="window">
+        <div class="window-decoration">
+          <div class="items">
+            <div id="close-more-window-button" class="item close-window-decoration"></div>
+            <div id="max-more-window-button" class="item max-window-decoration"></div>
+            <div id="min-more-window-button" class="item min-window-decoration"></div>
+          </div>
+          <div class="title">More Settings</div>
+        </div>
+        <div class="window-field">
+          <div class="options-container">
+            <div class="option-item">
+              <label class="toggle-label">
+                <div class="label">
+                  <p class="title">Privacy / NDA Mode</p>
+                  <p class="description">Censor project names and details. Leave blank to use default placeholder.</p>
+                </div>
+                <input type="checkbox" id="toggle-privacy-mode">
+                <span class="toggle-slider"></span>
+              </label>
+              <input id="custom-details" type="text" class="toggle-input" placeholder="Project Name" disabled>
+              <input id="custom-state" type="text" class="toggle-input" placeholder="Details" disabled>
+            </div>
+            <div class="option-item">
+              <label class="toggle-label">
+                <div class="label">
+                  <p class="title">Custom Icon</p>
+                  <p class="description">Replace the Adobe app icon with an image from a custom URL</p>
+                </div>
+                <input type="checkbox" id="toggle-custom-image">
+                <span class="toggle-slider"></span>
+              </label>
+              <input id="custom-image-url" type="text" class="toggle-input"
+                placeholder="https://your-image-url.com/image.png" disabled>
+            </div>
+            <div class="option-item">
+              <label class="toggle-label">
+                <div class="label">
+                  <p class="title">Custom Prefix</p>
+                  <p class="description">Change the default 'Working on' prefix in status details.</p>
+                </div>
+                <input type="checkbox" id="toggle-custom-prefix">
+                <span class="toggle-slider"></span>
+              </label>
+              <input id="custom-prefix-str" type="text" class="toggle-input" placeholder="Working on" disabled>
+            </div>
+          </div>
+
+          <div class="options-note">
+            Settings are applied automatically. RPC will reload immediately.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
+      <p class="contributor">contributions by <a href="https://github.com/omaralhami" class="contributor-name">mar</a>
+      </p>
+    </div>
+
+  </div>
+  <!-- <script src="../libs/CSInterface.js"></script> -->
+  <script src="./index.js"></script>
 </body>
 
 </html>
