@@ -50,12 +50,9 @@ const copyDeps = (outputExtensionFolder) => {
   fs.cpSync("./.debug", `${outputExtensionFolder}/.debug`)
   log(`Copying CSXS...`)
   fs.cpSync("./CSXS", `${outputExtensionFolder}/CSXS`, { recursive: true })
-  log(`Copying libs...`)
-  fs.cpSync("./libs", `${outputExtensionFolder}/libs`, { recursive: true })
   log(`Copying jsx host...`)
   fs.cpSync("./jsx", `${outputExtensionFolder}/jsx`, { recursive: true })
 
-  // fs.cpSync("./scripts/dep/node_modules", `${outputExtensionFolder}/node_modules`, {recursive: true})
   log(`Copying config.json...`)
   fs.cpSync("./config.json", `${outputExtensionFolder}/config.json`)
 
