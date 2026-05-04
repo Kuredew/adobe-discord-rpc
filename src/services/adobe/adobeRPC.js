@@ -1,241 +1,241 @@
 import { Client } from 'discord-rpc'
 import EventEmitter from 'events'
 
-class AdobeRPC extends EventEmitter{
-    constructor({stateManager, logger, adobeApp}) {
-        super()
+class AdobeRPC extends EventEmitter {
+  constructor({ stateManager, logger, adobeApp, csInterface }) {
+    super()
 
-        this.logger = logger
-        this.client = null
-        this.callback = null
-        this.interval = null
+    this.logger = logger
+    this.client = null
+    this.callback = null
+    this.interval = null
 
-        this.adobeApp = adobeApp
-        this.stateManager = stateManager
-        this.getCurrentState = null
-        this.startTimestamp = new Date()
-        this.csInterface = new CSInterface()
-        this.isReconnecting = false
-        this.lastActivityInfo = null
+    this.adobeApp = adobeApp
+    this.stateManager = stateManager
+    this.getCurrentState = null
+    this.startTimestamp = new Date()
+    this.csInterface = csInterface
+    this.isReconnecting = false
+    this.lastActivityInfo = null
 
-        this.adobeApp.load()
+    this.adobeApp.load()
 
-        this.logger.info('AdobeRPC Initialized.')
+    this.logger.info('AdobeRPC Initialized.')
+  }
+
+  createNewClient() {
+    this.client = new Client({ transport: 'ipc' })
+    this.logger.info('Created new RPC Client')
+  }
+
+  emitConnection(connection) {
+    this.emit('connectionChange', connection)
+  }
+
+  emitAdobeInfo(info) {
+    this.emit('adobeInfoChange', info)
+  }
+
+  login() {
+    if (this.isReconnecting) return
+
+    const state = this.stateManager.getState()
+    if (!state.power) {
+      this.logger.warn('Power is OFF. login job aborted.')
+
+      this.emitConnection('disconnected')
+      return
     }
 
-    createNewClient() {
-        this.client = new Client({ transport: 'ipc' })
-        this.logger.info('Created new RPC Client')
-    }
-    
-    emitConnection(connection) {
-        this.emit('connectionChange', connection)
-    }
-    
-    emitAdobeInfo(info) {
-        this.emit('adobeInfoChange', info)
-    }
+    this.createNewClient()
 
-    login() {
-        if (this.isReconnecting) return
+    const reconnect = () => {
+      this.stopPolling()
 
-        const state = this.stateManager.getState()
-        if (!state.power) {
-            this.logger.warn('Power is OFF. login job aborted.')
-
-            this.emitConnection('disconnected')
-            return
-        }
-
-        this.createNewClient()
-
-        const reconnect = () => {
-            this.stopPolling()
-
-            const state = this.stateManager.getState()
-            if (state.power && !this.isReconnecting) {
-                this.logger.info(`Reconnecting RPC after 5 sec...`)
-                this.emitConnection('connecting')
-
-                setTimeout(() => {
-                    this.logger.info('Reconnecting RPC...')
-                    this.isReconnecting = false
-
-                    this.login()
-                }, 4000)
-
-                this.isReconnecting = true
-                return
-            }
-
-            this.logger.warn('Aborted reconnect')
-            this.emitConnection('disconnected')
-        }
-
-        this.client.once("ready", () => {
-            this.logger.info('RPC Connected!')
-            this.emitConnection('connected')
-
-            this.logger.info('Starting poll...')
-            this.startPolling()
-        })
-        this.client.once("disconnected", () => {
-            this.logger.info(`RPC Disconnected`)
-            reconnect()
-        })
-
-
-        this.logger.info(`Connecting with ClientID(${this.adobeApp.clientId})...`)
+      const state = this.stateManager.getState()
+      if (state.power && !this.isReconnecting) {
+        this.logger.info(`Reconnecting RPC after 5 sec...`)
         this.emitConnection('connecting')
 
-        this.client.login({
-            clientId: this.adobeApp.clientId
-        }).catch((err) => {
-            this.logger.error(`Error while trying to login : ${err}`)
-            reconnect()
-        })
+        setTimeout(() => {
+          this.logger.info('Reconnecting RPC...')
+          this.isReconnecting = false
+
+          this.login()
+        }, 4000)
+
+        this.isReconnecting = true
+        return
+      }
+
+      this.logger.warn('Aborted reconnect')
+      this.emitConnection('disconnected')
     }
 
-    logout() {
-        this.client.clearActivity().then(() => {
-            return this.client.destroy()
-        }).then(() => {
-            this.logger.info('Successfully logout')
-        }).catch((err) => {
-            this.logger.error('Error while trying to logout: ' + err)
-        }).finally(() => {
-            this.stopPolling()
-            this.emitConnection('disconnected')
-        })
-        
+    this.client.once("ready", () => {
+      this.logger.info('RPC Connected!')
+      this.emitConnection('connected')
+
+      this.logger.info('Starting poll...')
+      this.startPolling()
+    })
+    this.client.once("disconnected", () => {
+      this.logger.info(`RPC Disconnected`)
+      reconnect()
+    })
+
+
+    this.logger.info(`Connecting with ClientID(${this.adobeApp.clientId})...`)
+    this.emitConnection('connecting')
+
+    this.client.login({
+      clientId: this.adobeApp.clientId
+    }).catch((err) => {
+      this.logger.error(`Error while trying to login : ${err}`)
+      reconnect()
+    })
+  }
+
+  logout() {
+    this.client.clearActivity().then(() => {
+      return this.client.destroy()
+    }).then(() => {
+      this.logger.info('Successfully logout')
+    }).catch((err) => {
+      this.logger.error('Error while trying to logout: ' + err)
+    }).finally(() => {
+      this.stopPolling()
+      this.emitConnection('disconnected')
+    })
+
+  }
+
+  setActivity(state) {
+    const activity = {
+      startTimestamp: this.startTimestamp,
+      largeImageText: this.adobeApp.appName,
     }
 
-    setActivity(state) {
-        const activity = {
-            startTimestamp: this.startTimestamp,
-            largeImageText: this.adobeApp.appName,
-        }
-
-        if (state.rpcDetails && state.showDetails) {
-            activity.details = state.privacyMode ? state.customDetailsStr || "[Redacted]" : state.rpcDetails
-        }
-
-        if (state.rpcState && state.showState) {
-            const prefix = state.customPrefix ? state.customPrefixStr : "Working on"
-            const stateStr = state.privacyMode ? state.customStateStr || "Private" : state.rpcState
-
-            activity.state = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`;
-        }
-
-        activity.smallImageKey = state.rpcSmallImageKey
-
-        activity.partySize = parseInt(state.rpcPartySize)
-        activity.partyMax = parseInt(state.rpcPartyMax)
-
-        state.customImage ? activity.largeImageKey = state.customImageURL : null
-
-        if (this.lastActivityInfo && JSON.stringify(this.lastActivityInfo) === JSON.stringify(activity)) {
-            this.logger.warn('Aborted setActivity request')
-            return
-        }
-
-        this.client.setActivity(activity).catch((err) => {
-            this.logger.error(`Failed to update activity : ${err}`)
-        }).then(() => {
-            this.logger.info('Set activity to: ' + JSON.stringify(activity, null, 4))
-            this.lastActivityInfo = activity
-        });
+    if (state.rpcDetails && state.showDetails) {
+      activity.details = state.privacyMode ? state.customDetailsStr || "[Redacted]" : state.rpcDetails
     }
 
-    async executeScript(func) {
-        return new Promise((resolve) => {
-            this.csInterface.evalScript(func, (r) => {
-                resolve(r)
-            })
-        })
-        
+    if (state.rpcState && state.showState) {
+      const prefix = state.customPrefix ? state.customPrefixStr : "Working on"
+      const stateStr = state.privacyMode ? state.customStateStr || "Private" : state.rpcState
+
+      activity.state = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`;
     }
-    
-    startPolling() {
-        this.stopPolling()
 
-        const funcs = [
-            { props: 'rpcDetails', func: 'getDetails()' },
-            { props: 'rpcState', func: 'getState()' },
-            { props: 'rpcSmallImageKey', func: 'getSmallImageKey()' },
-            { props: 'rpcPartySize', func: 'getPartySize()' },
-            { props: 'rpcPartyMax', func: 'getPartyMax()' },
-        ]
+    activity.smallImageKey = state.rpcSmallImageKey
 
-        const poll = async () => {
-            const currentId = this.interval
+    activity.partySize = parseInt(state.rpcPartySize)
+    activity.partyMax = parseInt(state.rpcPartyMax)
 
-            let isChanged = false
-            const state = this.stateManager.getState()
-            const responses = []
-            
-            for (const func of funcs) {
-                const response = await this.executeScript(func.func)
-                responses.push({ props: func.props, response: response })
-            }
-            
-            const adobeInfo = {}
-            responses.forEach((response) => {
-                if (state[response.props] !== response.response) {
-                    this.logger.info(`Detected changes in '${response.props}' (${state[response.props]} -> ${response.response})`)
-                    adobeInfo[response.props] = response.response
-                    isChanged = true
-                }
-            })
-            
-            if (isChanged) {
-                this.emit('adobeInfoChange', adobeInfo)
-            }
-            
-            if (this.interval === currentId) {
-                this.interval = setTimeout(poll, 1000)                
-            } else {
-                this.logger.warn('Polling schedule eliminated due to interval ID mismatch')
-            }
+    state.customImage ? activity.largeImageKey = state.customImageURL : null
+
+    if (this.lastActivityInfo && JSON.stringify(this.lastActivityInfo) === JSON.stringify(activity)) {
+      this.logger.warn('Aborted setActivity request')
+      return
+    }
+
+    this.client.setActivity(activity).catch((err) => {
+      this.logger.error(`Failed to update activity : ${err}`)
+    }).then(() => {
+      this.logger.info('Set activity to: ' + JSON.stringify(activity, null, 4))
+      this.lastActivityInfo = activity
+    });
+  }
+
+  async executeScript(func) {
+    return new Promise((resolve) => {
+      this.csInterface.evalScript(func, (r) => {
+        resolve(r)
+      })
+    })
+
+  }
+
+  startPolling() {
+    this.stopPolling()
+
+    const funcs = [
+      { props: 'rpcDetails', func: 'getDetails()' },
+      { props: 'rpcState', func: 'getState()' },
+      { props: 'rpcSmallImageKey', func: 'getSmallImageKey()' },
+      { props: 'rpcPartySize', func: 'getPartySize()' },
+      { props: 'rpcPartyMax', func: 'getPartyMax()' },
+    ]
+
+    const poll = async () => {
+      const currentId = this.interval
+
+      let isChanged = false
+      const state = this.stateManager.getState()
+      const responses = []
+
+      for (const func of funcs) {
+        const response = await this.executeScript(func.func)
+        responses.push({ props: func.props, response: response })
+      }
+
+      const adobeInfo = {}
+      responses.forEach((response) => {
+        if (state[response.props] !== response.response) {
+          this.logger.info(`Detected changes in '${response.props}' (${state[response.props]} -> ${response.response})`)
+          adobeInfo[response.props] = response.response
+          isChanged = true
         }
+      })
 
+      if (isChanged) {
+        this.emit('adobeInfoChange', adobeInfo)
+      }
+
+      if (this.interval === currentId) {
         this.interval = setTimeout(poll, 1000)
-        this.logger.info('Polling schedule created')
-    }
-    
-    stopPolling() {
-        if (!this.interval) {
-            this.logger.warn('Stop polling aborted because interval is already null')
-            return
-        }
-        
-        this.logger.info(`Stopping polling with ID: ${this.interval}`)
-        clearTimeout(this.interval)
-        this.interval = null
-        this.logger.info('Polling stopped')
+      } else {
+        this.logger.warn('Polling schedule eliminated due to interval ID mismatch')
+      }
     }
 
-    reload(state) {
-        if (!state.power && state.rpcConnection === "connected") {
-            this.logger.info("Power is OFF but rpc connection is connected, disconnecting RPC...")
-            this.logout()
-        }
+    this.interval = setTimeout(poll, 1000)
+    this.logger.info('Polling schedule created')
+  }
 
-        if (state.power && state.rpcConnection === "disconnected") {
-            this.logger.info("Power is ON but rpc connection is disconnected, connecting RPC...")
-            this.login()
-        }
+  stopPolling() {
+    if (!this.interval) {
+      this.logger.warn('Stop polling aborted because interval is already null')
+      return
+    }
 
-        if (state.power && state.rpcConnection === "connected") {
-            this.logger.info('Updating RPC activity...')
-            this.setActivity(state)
-        }
+    this.logger.info(`Stopping polling with ID: ${this.interval}`)
+    clearTimeout(this.interval)
+    this.interval = null
+    this.logger.info('Polling stopped')
+  }
+
+  reload(state) {
+    if (!state.power && state.rpcConnection === "connected") {
+      this.logger.info("Power is OFF but rpc connection is connected, disconnecting RPC...")
+      this.logout()
     }
-    
-    startService() {
-        this.login()
-        this.stateManager.on('stateChange', (state) => this.reload(state))
+
+    if (state.power && state.rpcConnection === "disconnected") {
+      this.logger.info("Power is ON but rpc connection is disconnected, connecting RPC...")
+      this.login()
     }
+
+    if (state.power && state.rpcConnection === "connected") {
+      this.logger.info('Updating RPC activity...')
+      this.setActivity(state)
+    }
+  }
+
+  startService() {
+    this.login()
+    this.stateManager.on('stateChange', (state) => this.reload(state))
+  }
 }
 
 export default AdobeRPC
