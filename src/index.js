@@ -62,6 +62,9 @@ function main() {
   rpc.on('connectionChange', (connection) => {
     stateManager.setState({ rpcConnection: connection })
   })
+  rpc.on('connectionError', () => {
+    stateManager.setState({ power: false })
+  })
 
 
   stateEvent.registerListener()
