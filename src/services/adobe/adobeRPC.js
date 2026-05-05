@@ -6,9 +6,11 @@ class AdobeRPC extends EventEmitter {
     super()
 
     this.logger = logger
-    this.client = null
+    this.client = new Client({ transport: 'ipc' })
     this.callback = null
     this.interval = null
+    this.MAX_RECONNECT = 5
+    this.reconnectCount = 0
 
     this.adobeApp = adobeApp
     this.stateManager = stateManager
@@ -38,7 +40,6 @@ class AdobeRPC extends EventEmitter {
 
   login() {
     if (this.isReconnecting) return
-
     const state = this.stateManager.getState()
     if (!state.power) {
       this.logger.warn('Power is OFF. login job aborted.')
@@ -47,21 +48,47 @@ class AdobeRPC extends EventEmitter {
       return
     }
 
-    this.createNewClient()
+
+    this.reconnectCount = 0
+    const connect = () => {
+      this.createNewClient()
+      this.logger.info(`Connecting with ClientID(${this.adobeApp.clientId})...`)
+      this.emitConnection('connecting')
+
+      this.client.on("ready", () => {
+        this.logger.info('RPC Connected!')
+        this.emitConnection('connected')
+
+        this.logger.info('Starting poll...')
+        this.startPolling()
+      })
+      this.client.on("disconnected", () => {
+        this.logger.info(`RPC Disconnected`)
+        reconnect()
+      })
+
+      this.client.login({
+        clientId: this.adobeApp.clientId
+      }).catch((err) => {
+        this.logger.error(`Error while trying to login : ${err}`)
+        reconnect()
+      })
+    }
 
     const reconnect = () => {
       this.stopPolling()
 
       const state = this.stateManager.getState()
-      if (state.power && !this.isReconnecting) {
-        this.logger.info(`Reconnecting RPC after 5 sec...`)
+      if (state.power && !this.isReconnecting && this.reconnectCount < this.MAX_RECONNECT) {
+        this.logger.info(`Reconnecting RPC after 5 sec... | reconnect count: ${this.reconnectCount}`)
         this.emitConnection('connecting')
 
         setTimeout(() => {
           this.logger.info('Reconnecting RPC...')
           this.isReconnecting = false
+          this.reconnectCount += 1
 
-          this.login()
+          connect()
         }, 4000)
 
         this.isReconnecting = true
@@ -69,31 +96,11 @@ class AdobeRPC extends EventEmitter {
       }
 
       this.logger.warn('Aborted reconnect')
+      this.emit('maxReconnectReached', new Error('Maximum reconnect reached.'))
       this.emitConnection('disconnected')
     }
 
-    this.client.once("ready", () => {
-      this.logger.info('RPC Connected!')
-      this.emitConnection('connected')
-
-      this.logger.info('Starting poll...')
-      this.startPolling()
-    })
-    this.client.once("disconnected", () => {
-      this.logger.info(`RPC Disconnected`)
-      reconnect()
-    })
-
-
-    this.logger.info(`Connecting with ClientID(${this.adobeApp.clientId})...`)
-    this.emitConnection('connecting')
-
-    this.client.login({
-      clientId: this.adobeApp.clientId
-    }).catch((err) => {
-      this.logger.error(`Error while trying to login : ${err}`)
-      reconnect()
-    })
+    connect()
   }
 
   logout() {
@@ -117,22 +124,22 @@ class AdobeRPC extends EventEmitter {
     }
 
     if (state.rpcDetails && state.showDetails) {
-      activity.details = state.privacyMode ? state.customDetailsStr || "[Redacted]" : state.rpcDetails
+      activity['details'] = state.privacyMode ? state.customDetailsStr || "[Redacted]" : state.rpcDetails
     }
 
     if (state.rpcState && state.showState) {
       const prefix = state.customPrefix ? state.customPrefixStr : "Working on"
       const stateStr = state.privacyMode ? state.customStateStr || "Private" : state.rpcState
 
-      activity.state = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`;
+      activity['state'] = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`;
     }
 
-    activity.smallImageKey = state.rpcSmallImageKey
+    activity['smallImageKey'] = state.rpcSmallImageKey
 
-    activity.partySize = parseInt(state.rpcPartySize)
-    activity.partyMax = parseInt(state.rpcPartyMax)
+    activity['partySize'] = parseInt(state.rpcPartySize)
+    activity['partyMax'] = parseInt(state.rpcPartyMax)
 
-    state.customImage ? activity.largeImageKey = state.customImageURL : null
+    state.customImage ? (state.customImageURL ? (activity['largeImageKey'] = state.customImageURL) : null) : null
 
     if (this.lastActivityInfo && JSON.stringify(this.lastActivityInfo) === JSON.stringify(activity)) {
       this.logger.warn('Aborted setActivity request')
