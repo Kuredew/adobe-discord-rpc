@@ -9,6 +9,7 @@ const csInterface = new CSInterface();
 const getStateEvent = new CSEvent('com.kureichi.rpc.get-state', 'APPLICATION')
 const stateEvent = new CSEvent('com.kureichi.rpc.state-from-view', 'APPLICATION')
 
+const header = document.getElementById('header')
 const versionInfo = document.getElementById('version');
 const powerSwitchButton = document.getElementById('button');
 
@@ -49,6 +50,8 @@ class App {
 
     this.childLogger.info('App initialized')
     this.Msg = {
+      headerClick: 'HEADER_CLICK',
+
       showStateChange: 'STATE_CHANGE',
       showDetailsChange: 'DETAILS_CHANGE',
 
@@ -74,6 +77,9 @@ class App {
     const newModel = { ...currentState }
 
     switch (msg.type) {
+      case this.Msg.headerClick:
+        csInterface.openURLInDefaultBrowser('https://github.com/Kuredew/adobe-discord-rpc')
+        break
       case this.Msg.showStateChange:
         newModel.showState = toggleState.checked
         break
@@ -153,6 +159,8 @@ class App {
         break
     }
     versionInfo.innerHTML = newState.versionInfo
+
+    header.onclick = () => dispatch({ type: this.Msg.headerClick })
 
     powerSwitchButton.onclick = () => dispatch({ type: this.Msg.powerButtonClick })
 
