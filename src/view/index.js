@@ -1,4 +1,5 @@
 import { CSEvent, CSInterface, SystemPath } from 'csinterface-ts';
+import { openFolder } from '../utils';
 import StateManager from '../model/stateManager'
 import Logger from '../logger/logger';
 import path from 'path'
@@ -32,10 +33,11 @@ const customImageURL = document.getElementById('custom-image-url')
 const toggleCustomPrefix = document.getElementById('toggle-custom-prefix')
 const customPrefixStr = document.getElementById('custom-prefix-str')
 
+const folderLogs = path.join(csInterface.getSystemPath(SystemPath.USER_DATA), 'adobe-discord-rpc', 'logs')
 const logger = Logger({
   outputPath: path.join(
-    csInterface.getSystemPath(SystemPath.USER_DATA),
-    'adobe-discord-rpc', 'logs', 'application-logs'
+    folderLogs,
+    'application-logs'
   )
 })
 
@@ -82,7 +84,7 @@ class App {
         newModel.showMoreSettingsWindow = true
         break
       case this.Msg.openLogsFolderClick:
-        this.childLogger.openFolder()
+        openFolder(folderLogs)
         break
       case this.Msg.closeMoreSettingsWindowClick:
         newModel.showMoreSettingsWindow = false

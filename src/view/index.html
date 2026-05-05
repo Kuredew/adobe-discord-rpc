@@ -9,48 +9,57 @@
 </head>
 
 <body>
-  <div class="panel">
-    <div class="header">
-      <h1>Discord RPC</h1>
-      <p class="version" id="version">Checking Version...</p>
-    </div>
-
-    <div class="status-section">
-      <div class="status-indicator">
-        <span class="status-dot" id="status-dot"></span>
-        <span id="state" class="state">-</span>
+  <div class="container">
+    <div class="panel">
+      <div class="header">
+        <h1>Discord RPC</h1>
+        <p class="version" id="version">Checking Version...</p>
       </div>
-      <button id="button">Please Wait</button>
-    </div>
 
-    <div class="divider"></div>
-
-    <div class="options-container">
-      <div class="option-item">
-        <label class="toggle-label">
-          <div class="label">
-            <p class="title">Show Details</p>
-          </div>
-          <input type="checkbox" id="toggle-details" checked>
-          <span class="toggle-slider"></span>
-        </label>
+      <div class="status-section">
+        <div class="status-indicator">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="state" class="state">-</span>
+        </div>
+        <button id="button">Please Wait</button>
       </div>
-      <div class="option-item">
-        <label class="toggle-label">
-          <div class="label">
-            <p class="title">Show State</p>
-          </div>
-          <input type="checkbox" id="toggle-state" checked>
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-    </div>
 
-    <div class="more-section">
-      <button id="more-button" class="more">More</button>
-      <p id="logs-folder" class="logs-folder">
-        Open Logs Folder
+      <div class="divider"></div>
+
+      <div class="options-container">
+        <div class="option-item">
+          <label class="toggle-label">
+            <div class="label">
+              <p class="title">Show Details</p>
+            </div>
+            <input type="checkbox" id="toggle-details" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="option-item">
+          <label class="toggle-label">
+            <div class="label">
+              <p class="title">Show State</p>
+            </div>
+            <input type="checkbox" id="toggle-state" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="more-section">
+        <button id="more-button" class="more">More</button>
+        <p id="logs-folder" class="logs-folder">
+          Open Logs Folder
+        </p>
+      </div>
+        
+      <div class="footer">
+        <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
+        <p class="contributor">contributions by <a href="https://github.com/omaralhami" class="contributor-name">mar</a>
       </p>
+    </div>
+
     </div>
 
     <div id="more-container" class="more-container">
@@ -107,12 +116,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="footer">
-      <p class="developer">by <a href="https://github.com/Kuredew">Kureichi</a></p>
-      <p class="contributor">contributions by <a href="https://github.com/omaralhami" class="contributor-name">mar</a>
-      </p>
     </div>
 
   </div>
