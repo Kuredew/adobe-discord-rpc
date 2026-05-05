@@ -14,6 +14,7 @@ const createContext = async (outputExtensionFolder) => {
     bundle: true,
     outdir: outputExtensionFolder,
     platform: 'node',
+    inject: ['./src/polyfills.js'],
 
     plugins: [{
       name: 'log-rebuild',
