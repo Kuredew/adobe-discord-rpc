@@ -307,7 +307,7 @@ body {
 }
 
 .more-container {
-    position: absolute;
+    position: fixed;
     display: none;
     top: 0;
     left: 0;
