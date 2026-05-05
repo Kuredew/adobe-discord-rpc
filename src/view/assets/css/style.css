@@ -15,11 +15,10 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
     background-color: rgb(30, 30, 34);
     color: white;
     display: flex;
@@ -34,9 +33,12 @@ body {
 
 .panel {
     width: 100%;
+    height: 100vh;
+    min-height: fit-content;
     max-width: 280px;
     padding: 24px 20px;
     display: flex;
+    justify-content: center;
     flex-direction: column;
     gap: 20px;
 }
@@ -166,6 +168,7 @@ body {
 .options-container {
     display: flex;
     flex-direction: column;
+    min-height: fit-content;
     gap: 20px;
 }
 
@@ -310,6 +313,7 @@ body {
 .more-container .window {
     /* border: 1px solid white; */
     box-shadow: inset 0 0 0 1px #333;
+    max-height: 80vh;
     border-radius: 10px;
     width: 350px;
     display: flex;
@@ -321,6 +325,7 @@ body {
 .more-container .window .window-decoration {
     display: flex;
     padding: 10px 15px;
+    min-height: fit-content;
     justify-content: space-between;
     background-color: grey;
 }
@@ -366,6 +371,7 @@ body {
 .more-container .window .window-field {
     display: flex;
     flex-direction: column;
+    overflow: auto;
     gap: 30px;
     padding: 15px;
 }
