@@ -9,3 +9,6 @@ dist
 
 # Ignore temp folder
 temp
+
+# Ignore logs folder
+logs

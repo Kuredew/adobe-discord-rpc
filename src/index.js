@@ -5,8 +5,9 @@ import StateManager from "./model/stateManager"
 import VersionCheck from "./services/github/versionCheck"
 import ConfigReader from "./services/config/configReader"
 import ManifestReader from "./services/manifest/ManifestReader"
+import Logger from "./logger/logger"
+import path from 'path'
 import { CSEvent, CSInterface, SystemPath } from "csinterface-ts"
-import { Logger } from "./logger/logger"
 
 const getVersion = async ({
   stateManager,
@@ -14,42 +15,40 @@ const getVersion = async ({
   csInterface
 }) => {
   const manifestReader = new ManifestReader(csInterface, SystemPath.EXTENSION)
-  const versionCheck = new VersionCheck(manifestReader, baseLogger.child('VersionCheck'))
+  const versionCheck = new VersionCheck(manifestReader, baseLogger.child({ scope: 'VersionCheck' }))
   const versionInfo = await versionCheck.getVersion()
   stateManager.setState({ versionInfo: versionInfo })
 }
 
 function main() {
   const csInterface = new CSInterface()
-  const baseLogger = new Logger(
-    csInterface,
-    SystemPath.USER_DATA,
-    'daemon-log',
-    {
-      label: 'Daemon'
-    }
-  )
+  const baseLogger = Logger({
+    outputPath: path.join(
+      csInterface.getSystemPath(SystemPath.USER_DATA),
+      'adobe-discord-rpc', 'logs', 'daemon-logs'
+    )
+  })
 
-  const configReader = new ConfigReader(baseLogger.child('ConfigReader'), csInterface, SystemPath.EXTENSION)
-  const stateManager = new StateManager(localStorage, baseLogger.child('stateManager'))
+  const configReader = new ConfigReader(baseLogger.child({ scope: 'ConfigReader' }), csInterface, SystemPath.EXTENSION)
+  const stateManager = new StateManager(localStorage, baseLogger.child({ scope: 'stateManager' }))
   stateManager.init()
 
   const adobeApp = new AdobeApp({
-    logger: baseLogger.child('AdobeApp'),
+    logger: baseLogger.child({ scope: 'AdobeApp' }),
     configReader,
     csInterface
   })
 
   const rpc = new AdobeRPC({
     stateManager,
-    logger: baseLogger.child('AdobeRPC'),
+    logger: baseLogger.child({ scope: 'AdobeRPC' }),
     adobeApp,
     csInterface
   })
 
   const stateEvent = new StateEvent({
     stateManager,
-    logger: baseLogger.child('StateEvent'),
+    logger: baseLogger.child({ scope: 'StateEvent' }),
     csInterface,
     csEvent: CSEvent
   })

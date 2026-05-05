@@ -1,6 +1,7 @@
 import { CSEvent, CSInterface, SystemPath } from 'csinterface-ts';
 import StateManager from '../model/stateManager'
-import { Logger } from '../logger/logger';
+import Logger from '../logger/logger';
+import path from 'path'
 
 const csInterface = new CSInterface();
 
@@ -31,19 +32,18 @@ const customImageURL = document.getElementById('custom-image-url')
 const toggleCustomPrefix = document.getElementById('toggle-custom-prefix')
 const customPrefixStr = document.getElementById('custom-prefix-str')
 
-const logger = new Logger(
-  csInterface,
-  SystemPath.USER_DATA,
-  'view-log',
-  {
-    label: 'View'
-  }
-)
+const logger = Logger({
+  outputPath: path.join(
+    csInterface.getSystemPath(SystemPath.USER_DATA),
+    'adobe-discord-rpc', 'logs', 'application-logs'
+  )
+})
 
-// ELM Arch in js yeah
+// not actually elm architecture
 class App {
-  constructor() {
-    this.childLogger = logger.child('App')
+  constructor(stateManager) {
+    this.stateManager = stateManager
+    this.childLogger = logger.child({ scope: 'App' })
 
     this.childLogger.info('App initialized')
     this.Msg = {
@@ -67,7 +67,8 @@ class App {
     }
   }
 
-  Update(msg, currentState) {
+  Update(msg) {
+    const currentState = this.stateManager.getState()
     const newModel = { ...currentState }
 
     switch (msg.type) {
@@ -116,12 +117,14 @@ class App {
         this.childLogger.error('Msg not match')
     }
 
-    this.childLogger.info(`Updated State to ${JSON.stringify(currentState, null, 2)}`)
+    // this.childLogger.info(`Updated State to ${JSON.stringify(currentState, null, 2)}`)
     return newModel
   }
 
 
-  ViewRender(newState, dispatch) {
+  ViewRender(dispatch) {
+    const newState = this.stateManager.getState()
+
     switch (newState.rpcConnection) {
       case "connected":
         connectionInfo.innerHTML = 'Connected'
@@ -194,27 +197,20 @@ class App {
 
     this.childLogger.info('Component rendered')
 
-    // while this is not a perfect elm architecture, we can just update the html directly and return empty to make it faster
     return
   }
 }
 
 
 function main() {
-  const childLogger = logger.child('Main')
-  const app = new App()
-  const stateManager = new StateManager(localStorage, childLogger.child('StateManager'))
+  const childLogger = logger.child({ scope: 'Main' })
+  const stateManager = new StateManager(localStorage, childLogger.child({ scope: 'StateManager' }))
   stateManager.init()
+  const app = new App(stateManager)
 
-  // we decided to use the state object instead of updating directly to the state class
-  // update: Nah we'll use statemanager instance class
-  let currentState = stateManager.getState()
-
-  csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (r) => {
-    childLogger.info('Got State from backend, received with value : ' + JSON.stringify(r.data, null, 4))
-    // currentState.updateFromObj(r.data)
-    currentState = r.data
-    render(currentState)
+  csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (response) => {
+    stateManager.setState(response.data)
+    render()
   })
 
   const dispatchStateEvent = (state) => {
@@ -227,13 +223,15 @@ function main() {
   const dispatch = (msg) => {
     childLogger.info('Got msg from View, updating state')
 
-    currentState = app.Update(msg, currentState)
-    dispatchStateEvent(currentState)
+    const newState = app.Update(msg)
+    stateManager.setState(newState)
+
+    dispatchStateEvent(newState)
   }
 
-  const render = (state) => {
+  const render = () => {
     childLogger.info('Rendering component')
-    app.ViewRender(state, dispatch)
+    app.ViewRender(dispatch)
   }
 
   setTimeout(() => {
