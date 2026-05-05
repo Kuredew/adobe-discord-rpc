@@ -96,7 +96,7 @@ class AdobeRPC extends EventEmitter {
       }
 
       this.logger.warn('Aborted reconnect')
-      this.emit('connectionError', new Error('Maximum reconnect reached.'))
+      this.emit('maxReconnectReached', new Error('Maximum reconnect reached.'))
       this.emitConnection('disconnected')
     }
 
