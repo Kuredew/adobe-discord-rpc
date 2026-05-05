@@ -49,6 +49,12 @@ body {
 .header {
     text-align: center;
     flex: none;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.header:hover {
+    opacity: 0.7; 
 }
 
 .panel h1 {
@@ -61,12 +67,6 @@ body {
 .panel .version {
     font-size: 10px;
     color: rgba(255, 255, 255, 0.5);
-    transition: opacity 0.3s;
-    cursor: pointer;
-}
-
-.panel .version:hover {
-    opacity: 0.7;
 }
 
 .status-section {
