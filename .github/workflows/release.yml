@@ -12,7 +12,7 @@ jobs:
     
     steps:
       - name: Checkout 
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'recursive'
         
@@ -52,7 +52,13 @@ jobs:
           pnpm version $NEW_VER --no-git-tag-version
 
           # bump manifest.xml
-          sed -i "s/ExtensionBundleVersion=\"[^\"]*\"/ExtensionBundleVersion=\"$NEW_VER\"/" CSXS/manifest.xml
+          node -e "
+            const fs = require('fs');
+            const path = 'CSXS/manifest.xml';
+            let content = fs.readFileSync(path, 'utf8');
+            content = content.replace(/ExtensionBundleVersion=\"[^\"]*\"/, 'ExtensionBundleVersion=\"' + '$NEW_VER' + '\"');
+            fs.writeFileSync(path, content);
+          "
           
       - name: Commit and push to github
         run: |
