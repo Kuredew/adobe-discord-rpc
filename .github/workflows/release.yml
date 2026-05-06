@@ -38,7 +38,7 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          node scripts/semver-gen/index.js -c > release-template.md
+          node scripts/semver-gen/index.js -c >> release-template.md
           node scripts/semver-gen/index.js -t
           
       - name: Update Files (bump version)
