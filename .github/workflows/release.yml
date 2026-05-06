@@ -32,15 +32,14 @@ jobs:
 
       - name: Generate tag and changelog
         id: semver-gen
-        working-directory: scripts/semver-gen
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          node index.js -c > ../../release-template.md
-          node index.js -t
+          node scripts/semver-gen/index.js -c > release-template.md
+          node scripts/semver-gen/index.js -t
           
       - name: Update Files (bump version)
         run: |
