@@ -52,18 +52,8 @@ jobs:
           NEXT_TAG=${{ steps.semver-gen.outputs.next_tag }}
           NEW_VER=$NEXT_TAG.Substring(1)
           echo "Bumping to $NEW_VER"
-          
-          # bump package.json
-          pnpm version $NEW_VER --no-git-tag-version
 
-          # bump manifest.xml
-          node -e "
-            const fs = require('fs');
-            const path = 'CSXS/manifest.xml';
-            let content = fs.readFileSync(path, 'utf8');
-            content = content.replace(/ExtensionBundleVersion=\"[^\"]*\"/, 'ExtensionBundleVersion=\"' + '$NEW_VER' + '\"');
-            fs.writeFileSync(path, content);
-          "
+          node scripts/bump-version.js $NEW_VER
           
       - name: Commit and push to github
         run: |
