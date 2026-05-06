@@ -12,3 +12,6 @@ temp
 
 # Ignore logs folder
 logs
+
+# Ignore .env
+.env
