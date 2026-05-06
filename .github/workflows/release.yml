@@ -49,10 +49,10 @@ jobs:
           
       - name: Update Files (bump version)
         run: |
-          NEXT_TAG=${{ steps.semver-gen.outputs.next_tag }}
-          NEW_VER=$NEXT_TAG.Substring(1)
+          $NEXT_TAG = "${{ steps.semver-gen.outputs.next_tag }}"
+          $NEW_VER = $NEXT_TAG.Substring(1)
           echo "Bumping to $NEW_VER"
-
+      
           node scripts/bump-version.js $NEW_VER
           
       - name: Commit and push to github
