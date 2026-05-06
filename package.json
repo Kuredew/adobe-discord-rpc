@@ -1,7 +1,7 @@
 {
   "name": "adobe-discord-rpc",
   "type": "module",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Discord Rich Presence for AE made by Kureichi",
   "scripts": {
     "dev": "node ./scripts/development.js",
