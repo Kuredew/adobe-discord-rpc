@@ -1,0 +1,72 @@
+name: Release Workflow
+
+on:
+  workflow-dispatch:
+  
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+        
+      - name: Setup Node JS
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v6
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build extension
+        run: pnpm run build
+
+      - name: Generate tag and changelog
+        id: semver-gen
+        working-directory: ${{ github.workspace }}/scripts/semver-gen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          node index.js -c > ${{ github.workspace }}/release-template.md
+          node index.js -t
+          
+      - name: Update Files (bump version)
+        run: |
+          NEXT_TAG=${{ steps.semver-gen.outputs.next_tag }}
+          NEW_VER="${NEXT_TAG#v}"
+          echo "Bumping to $NEW_VER"
+          
+          # bump package.json
+          pnpm version $NEW_VER --no-git-tag-version
+
+          # bump manifest.xml
+          sed -i "s/ExtensionBundleVersion=\"[^\"]*\"/ExtensionBundleVersion=\"$NEW_VER\"/" CSXS/manifest.xml
+          
+      - name: Commit and push to github
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json CSXS/manifest.xml
+          git commit -m "chore: bump version to ${{ steps.semver-gen.outputs.next_tag }}"
+          git push
+          
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            ${{ github.workspace }}/dist/com.kureichi.discordrpc.zip
+            ${{ github.workspace }}/dist/com.kureichi.discordrpc.zxp
+          tag_name: ${{ steps.semver-gen.outputs.next_tag }}
+          body_path: ${{ github.workspace }}/release-template.md
