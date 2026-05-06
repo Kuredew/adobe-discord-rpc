@@ -32,14 +32,14 @@ jobs:
 
       - name: Generate tag and changelog
         id: semver-gen
-        working-directory: ./scripts/semver-gen
+        working-directory: scripts/semver-gen
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          node index.js -c > ${{ github.workspace }}/release-template.md
+          node index.js -c > ../../release-template.md
           node index.js -t
           
       - name: Update Files (bump version)
@@ -72,7 +72,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           files: |
-            ${{ github.workspace }}/dist/com.kureichi.discordrpc.zip
-            ${{ github.workspace }}/dist/com.kureichi.discordrpc.zxp
+            dist/com.kureichi.discordrpc.zip
+            dist/com.kureichi.discordrpc.zxp
           tag_name: ${{ steps.semver-gen.outputs.next_tag }}
-          body_path: ${{ github.workspace }}/release-template.md
+          body_path: release-template.md
