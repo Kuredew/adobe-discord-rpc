@@ -62,9 +62,6 @@ function main() {
   rpc.on('connectionChange', (connection) => {
     stateManager.setState({ rpcConnection: connection })
   })
-  rpc.on('maxReconnectReached', () => {
-    stateManager.setState({ power: false })
-  })
 
 
   stateEvent.registerListener()

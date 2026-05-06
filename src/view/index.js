@@ -142,6 +142,10 @@ class App {
         connectionInfo.innerHTML = 'Connecting...'
         statusIndicator.className = 'status-indicator connecting'
         break
+      case "reconnecting":
+        connectionInfo.innerHTML = 'Reconnecting...'
+        statusIndicator.className = 'status-indicator connecting'
+        break
       case "disconnected":
         connectionInfo.innerHTML = 'Disconnected'
         statusIndicator.className = 'status-indicator disconnected'
