@@ -2,14 +2,14 @@ name: Release Workflow
 
 on:
   workflow_dispatch:
-  
+
 permissions:
   contents: write
 
 jobs:
   release:
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout 
         uses: actions/checkout@v6
@@ -17,24 +17,16 @@ jobs:
           submodules: 'recursive'
           fetch-depth: 0
 
-      - name: Initialize Submodules
-        run: |
-          git submodule update --init --recursive
-          git submodule foreach git pull origin main
-        
       - name: Setup Node JS
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          
+
       - name: Setup PNPM
         uses: pnpm/action-setup@v6
 
       - name: Install dependencies
         run: pnpm install
-
-      - name: Build extension
-        run: pnpm run build
 
       - name: Generate tag and changelog
         id: semver-gen
@@ -46,15 +38,18 @@ jobs:
         run: |
           node scripts/semver-gen/index.js -c >> release-template.md
           node scripts/semver-gen/index.js -t
-          
+
       - name: Update Files (bump version)
         run: |
           $NEXT_TAG = "${{ steps.semver-gen.outputs.next_tag }}"
           $NEW_VER = $NEXT_TAG.Substring(1)
           echo "Bumping to $NEW_VER"
-      
+
           node scripts/bump-version.js $NEW_VER
-          
+
+      - name: Build extension
+        run: pnpm run build
+
       - name: Commit and push to github
         run: |
           git config --global user.name "github-actions[bot]"
@@ -62,7 +57,7 @@ jobs:
           git add package.json CSXS/manifest.xml
           git commit -m "chore: bump version to ${{ steps.semver-gen.outputs.next_tag }}"
           git push
-          
+
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
