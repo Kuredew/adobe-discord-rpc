@@ -8,16 +8,15 @@ class AdobeRPC extends EventEmitter {
     this.logger = logger
     this.client = new Client({ transport: 'ipc' })
     this.callback = null
-    this.interval = null
+    this.pollingTimeoutId = null
+    this.reconnectTimeoutId = null
     this.MAX_RECONNECT = 5
-    this.reconnectCount = 0
 
     this.adobeApp = adobeApp
     this.stateManager = stateManager
     this.getCurrentState = null
     this.startTimestamp = new Date()
     this.csInterface = csInterface
-    this.isReconnecting = false
     this.lastActivityInfo = null
 
     this.adobeApp.load()
@@ -39,18 +38,17 @@ class AdobeRPC extends EventEmitter {
   }
 
   login() {
-    if (this.isReconnecting) return
-    const state = this.stateManager.getState()
-    if (!state.power) {
-      this.logger.warn('Power is OFF. login job aborted.')
+    let reconnectCount = 1
 
-      this.emitConnection('disconnected')
-      return
-    }
-
-
-    this.reconnectCount = 0
     const connect = () => {
+      const state = this.stateManager.getState()
+      if (!state.power || state.rpcConnection === "connecting") {
+        this.logger.warn('Power is OFF or RPC is connecting. connect job aborted.')
+
+        this.emitConnection('disconnected')
+        return
+      }
+
       this.createNewClient()
       this.logger.info(`Connecting with ClientID(${this.adobeApp.clientId})...`)
       this.emitConnection('connecting')
@@ -67,6 +65,7 @@ class AdobeRPC extends EventEmitter {
         reconnect()
       })
 
+      this.lastActivityInfo = null
       this.client.login({
         clientId: this.adobeApp.clientId
       }).catch((err) => {
@@ -78,32 +77,39 @@ class AdobeRPC extends EventEmitter {
     const reconnect = () => {
       this.stopPolling()
 
-      const state = this.stateManager.getState()
-      if (state.power && !this.isReconnecting && this.reconnectCount < this.MAX_RECONNECT) {
-        this.logger.info(`Reconnecting RPC after 5 sec... | reconnect count: ${this.reconnectCount}`)
-        this.emitConnection('connecting')
-
-        setTimeout(() => {
+      const makeTimeout = (ms) => {
+        this.emitConnection('reconnecting')
+        this.reconnectTimeoutId = setTimeout(() => {
           this.logger.info('Reconnecting RPC...')
-          this.isReconnecting = false
-          this.reconnectCount += 1
+          reconnectCount += 1
 
           connect()
-        }, 4000)
+        }, ms)
+      }
 
-        this.isReconnecting = true
+      const state = this.stateManager.getState()
+      if (!state.power || state.rpcConnection === "reconnecting") {
+        this.logger.warn('Abort reconnect')
         return
       }
 
-      this.logger.warn('Aborted reconnect')
-      this.emit('maxReconnectReached', new Error('Maximum reconnect reached.'))
-      this.emitConnection('disconnected')
+      if (reconnectCount <= this.MAX_RECONNECT) {
+        this.logger.info(`Reconnecting RPC after 5 sec... | reconnect count: ${reconnectCount}`)
+        makeTimeout(5000)
+        return
+      }
+
+      this.logger.warn('Reconnecting RPC after 10 sec...')
+      makeTimeout(10000)
     }
 
     connect()
   }
 
   logout() {
+    this.stopPolling()
+    clearTimeout(this.reconnectTimeoutId)
+
     this.client.clearActivity().then(() => {
       return this.client.destroy()
     }).then(() => {
@@ -111,10 +117,8 @@ class AdobeRPC extends EventEmitter {
     }).catch((err) => {
       this.logger.error('Error while trying to logout: ' + err)
     }).finally(() => {
-      this.stopPolling()
       this.emitConnection('disconnected')
     })
-
   }
 
   setActivity(state) {
@@ -175,7 +179,7 @@ class AdobeRPC extends EventEmitter {
     ]
 
     const poll = async () => {
-      const currentId = this.interval
+      const currentId = this.pollingTimeoutId
 
       let isChanged = false
       const state = this.stateManager.getState()
@@ -199,32 +203,32 @@ class AdobeRPC extends EventEmitter {
         this.emit('adobeInfoChange', adobeInfo)
       }
 
-      if (this.interval === currentId) {
-        this.interval = setTimeout(poll, 1000)
+      if (this.pollingTimeoutId === currentId) {
+        this.pollingTimeoutId = setTimeout(poll, 1000)
       } else {
         this.logger.warn('Polling schedule eliminated due to interval ID mismatch')
       }
     }
 
-    this.interval = setTimeout(poll, 1000)
+    this.pollingTimeoutId = setTimeout(poll, 1000)
     this.logger.info('Polling schedule created')
   }
 
   stopPolling() {
-    if (!this.interval) {
+    if (!this.pollingTimeoutId) {
       this.logger.warn('Stop polling aborted because interval is already null')
       return
     }
 
-    this.logger.info(`Stopping polling with ID: ${this.interval}`)
-    clearTimeout(this.interval)
-    this.interval = null
+    this.logger.info(`Stopping polling with ID: ${this.pollingTimeoutId}`)
+    clearTimeout(this.pollingTimeoutId)
+    this.pollingTimeoutId = null
     this.logger.info('Polling stopped')
   }
 
   reload(state) {
-    if (!state.power && state.rpcConnection === "connected") {
-      this.logger.info("Power is OFF but rpc connection is connected, disconnecting RPC...")
+    if (!state.power && (state.rpcConnection === "connected" || state.rpcConnection === "reconnecting")) {
+      this.logger.info("Power is OFF but rpc connection is connected or reconnecting, disconnecting RPC...")
       this.logout()
     }
 
