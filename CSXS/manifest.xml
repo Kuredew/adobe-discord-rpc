@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExtensionManifest Version="7.0"
   ExtensionBundleId="com.kureichi.discordrpc"
-  ExtensionBundleVersion="3.1.1"
+  ExtensionBundleVersion="3.1.2"
   ExtensionBundleName="Kureichi RPC">
 
   <ExtensionList>
