@@ -1,45 +1,85 @@
+import AdobeRPC from "./services/adobe/adobeRPC"
+import AdobeApp from "./services/adobe/adobeApp"
+import StateEvent from "./services/event/stateEvent"
+import StateManager from "./model/stateManager"
+import VersionCheck from "./services/github/versionCheck"
+import ConfigReader from "./services/config/configReader"
+import ManifestReader from "./services/manifest/ManifestReader"
+import Logger from "./logger/logger"
+import path from 'path'
 import { CSEvent, CSInterface, SystemPath } from "csinterface-ts"
-import ViewRender from "./ViewRender"
-import StateManager from "../model/stateManager"
-import Logger from "../logger/logger"
-import path from "path"
+
+const getVersion = async ({
+  stateManager,
+  baseLogger,
+  csInterface
+}) => {
+  try {
+    const manifestReader = new ManifestReader(csInterface, SystemPath.EXTENSION)
+    const versionCheck = new VersionCheck(manifestReader, baseLogger.child({ scope: 'VersionCheck' }))
+    const versionInfo = await versionCheck.getVersion()
+    stateManager.setState({ versionInfo })
+  } catch (e) {
+    baseLogger.error(`getVersion crashed: ${e}`)
+    stateManager.setState({ versionInfo: 'Unknown version' })
+  }
+}
 
 function main() {
   const csInterface = new CSInterface()
   const baseLogger = Logger({
     outputPath: path.join(
       csInterface.getSystemPath(SystemPath.USER_DATA),
-      'adobe-discord-rpc', 'logs', 'panel-logs'
+      'adobe-discord-rpc', 'logs', 'daemon-logs'
     )
   })
 
+  const configReader = new ConfigReader(baseLogger.child({ scope: 'ConfigReader' }), csInterface, SystemPath.EXTENSION)
   const stateManager = new StateManager(localStorage, baseLogger.child({ scope: 'stateManager' }))
   stateManager.init()
 
-  const viewRender = new ViewRender({ stateManager, logger: baseLogger })
-  viewRender.render()
-
-  const getStateEvent = new CSEvent('com.kureichi.rpc.get-state', 'APPLICATION')
-
-  let gotState = false
-
-  csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (response) => {
-    gotState = true
-    stateManager.setState(response.data)
-    viewRender.render()
+  const adobeApp = new AdobeApp({
+    logger: baseLogger.child({ scope: 'AdobeApp' }),
+    configReader,
+    csInterface
   })
 
-  const readyEvent = new CSEvent('com.kureichi.rpc.ready', 'APPLICATION')
-  let tries = 0
+  const rpc = new AdobeRPC({
+    stateManager,
+    logger: baseLogger.child({ scope: 'AdobeRPC' }),
+    adobeApp,
+    csInterface
+  })
 
-  const requestState = () => {
-    if (gotState || tries >= 30) return
-    tries += 1
-    if (tries === 1 || tries % 5 === 0) csInterface.dispatchEvent(readyEvent)
-    csInterface.dispatchEvent(getStateEvent)
-    setTimeout(requestState, 1000)
-  }
-  setTimeout(requestState, 500)
+  const stateEvent = new StateEvent({
+    stateManager,
+    logger: baseLogger.child({ scope: 'StateEvent' }),
+    csInterface,
+    csEvent: CSEvent
+  })
+
+  stateEvent.on('stateFromView', (state) => {
+    stateManager.setState(state)
+  })
+  rpc.on('adobeInfoChange', (info) => {
+    stateManager.setState(info)
+  })
+  rpc.on('connectionChange', (connection) => {
+    stateManager.setState({ rpcConnection: connection })
+  })
+
+  stateEvent.registerListener()
+  rpc.startService()
+
+  csInterface.addEventListener(CSInterface.ADOBE_APPLICATION_BEFORE_APPCLOSE, () => {
+    rpc.logout()
+  })
+
+  getVersion({
+    stateManager,
+    baseLogger,
+    csInterface
+  })
 }
 
 window.onload = () => main()
