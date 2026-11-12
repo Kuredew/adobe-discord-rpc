@@ -5,7 +5,9 @@
   "description": "Discord Rich Presence for AE made by Kureichi",
   "scripts": {
     "dev": "node ./scripts/development.js",
-    "build": "node ./scripts/production.js"
+    "build": "node ./scripts/production.js",
+    "lint": "eslint src tests scripts",
+    "test": "vitest run"
   },
   "targets": {
     "main": {
@@ -35,6 +37,7 @@
     "esbuild": "^0.28.0",
     "eslint": "^10.2.0",
     "globals": "^17.5.0",
-    "shx": "^0.4.0"
+    "shx": "^0.4.0",
+    "vitest": "^3.2.7"
   }
 }

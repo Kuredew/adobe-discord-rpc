@@ -26,7 +26,7 @@ export default async function createZxp(extensionFolderPath, outputCertPath, out
       cert: outputCertPath,
       password: password
     })
-  } catch (e) {
-    throw new Error(logger.parse(e.message))
+    } catch (e) {
+    throw new Error(logger.parse(e.message), { cause: e })
   }
 }

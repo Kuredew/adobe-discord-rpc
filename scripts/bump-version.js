@@ -8,7 +8,7 @@ execSync(`pnpm version ${newVer} --no-git-tag-version`);
 
 const manifestPath = 'CSXS/manifest.xml';
 let content = fs.readFileSync(manifestPath, 'utf8');
-content = content.replace(/ExtensionBundleVersion=\"[^\"]*\"/, `ExtensionBundleVersion="${newVer}"`);
+content = content.replace(/ExtensionBundleVersion="[^"]*"/, `ExtensionBundleVersion="${newVer}"`);
 fs.writeFileSync(manifestPath, content);
 
 console.log(`Successfully bumped to ${newVer}`);

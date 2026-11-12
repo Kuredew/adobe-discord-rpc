@@ -6,20 +6,32 @@ const logger = new Logger("archiveZIP")
 const log = (msg) => logger.log(msg)
 
 export default function archiveZip(fromPath, destPath, bundleName) {
-  try {
-    log(`Creating write stream output...`)
-    const output = fs.createWriteStream(destPath)
+  return new Promise((resolve, reject) => {
+    try {
+      log(`Creating write stream output...`)
+      const output = fs.createWriteStream(destPath)
 
-    log(`Creating archiver instance...`)
-    const archive = archiver("zip")
-    archive.pipe(output)
+      log(`Creating archiver instance...`)
+      const archive = archiver("zip")
 
-    log(`Archiving ${fromPath} to ${destPath}`)
-    archive.directory(fromPath, bundleName)
+      const fail = (e) => reject(new Error(logger.parse(e.message), { cause: e }))
 
-    log(`Finailzing`)
-    archive.finalize()
-  } catch (e) {
-    throw new Error(logger.parse(e.message))
-  }
+      output.on("close", () => {
+        log(`Archive created (${archive.pointer()} bytes)`)
+        resolve()
+      })
+      output.on("error", fail)
+      archive.on("error", fail)
+
+      archive.pipe(output)
+
+      log(`Archiving ${fromPath} to ${destPath}`)
+      archive.directory(fromPath, bundleName)
+
+      log(`Finalizing`)
+      archive.finalize()
+    } catch (e) {
+      reject(new Error(logger.parse(e.message), { cause: e }))
+    }
+  })
 }
