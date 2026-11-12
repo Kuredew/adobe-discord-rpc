@@ -11,6 +11,7 @@ class AdobeRPC extends EventEmitter {
     this.pollingTimeoutId = null
     this.reconnectTimeoutId = null
     this.MAX_RECONNECT = 5
+    this.LOGIN_TIMEOUT = 10000
 
     this.adobeApp = adobeApp
     this.stateManager = stateManager
@@ -29,6 +30,20 @@ class AdobeRPC extends EventEmitter {
     this.logger.info('Created new RPC Client')
   }
 
+  destroyClient() {
+    const client = this.client
+    if (!client) return
+
+    try {
+      client.removeAllListeners()
+      client.destroy().catch((err) => {
+        this.logger.warn(`Client destroy failed: ${err}`)
+      })
+    } catch (err) {
+      this.logger.warn(`Client already destroyed: ${err}`)
+    }
+  }
+
   emitConnection(connection) {
     this.emit('connectionChange', connection)
   }
@@ -42,65 +57,75 @@ class AdobeRPC extends EventEmitter {
 
     const connect = () => {
       const state = this.stateManager.getState()
-      if (!state.power || state.rpcConnection === "connecting") {
+      if (!state.power || state.rpcConnection === 'connecting') {
         this.logger.warn('Power is OFF or RPC is connecting. connect job aborted.')
 
         this.emitConnection('disconnected')
         return
       }
 
+      this.destroyClient()
       this.createNewClient()
       this.logger.info(`Connecting with ClientID(${this.adobeApp.clientId})...`)
       this.emitConnection('connecting')
 
-      this.client.on("ready", () => {
+      const client = this.client
+      let handled = false
+
+      // evita dois reconnects pro mesmo cliente
+      const fail = () => {
+        if (handled || client !== this.client) return
+        handled = true
+        reconnect()
+      }
+
+      client.on('ready', () => {
+        reconnectCount = 1
         this.logger.info('RPC Connected!')
         this.emitConnection('connected')
 
         this.logger.info('Starting poll...')
         this.startPolling()
       })
-      this.client.on("disconnected", () => {
-        this.logger.info(`RPC Disconnected`)
-        reconnect()
+      client.on('disconnected', () => {
+        this.logger.info('RPC Disconnected')
+        fail()
       })
 
       this.lastActivityInfo = null
-      this.client.login({
-        clientId: this.adobeApp.clientId
-      }).catch((err) => {
-        this.logger.error(`Error while trying to login : ${err}`)
-        reconnect()
+
+      let timeoutId
+      const timeout = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('login timeout')), this.LOGIN_TIMEOUT)
       })
+
+      Promise.race([client.login({ clientId: this.adobeApp.clientId }), timeout])
+        .catch((err) => {
+          this.logger.error(`Error while trying to login : ${err}`)
+          fail()
+        })
+        .finally(() => clearTimeout(timeoutId))
     }
 
     const reconnect = () => {
       this.stopPolling()
-
-      const makeTimeout = (ms) => {
-        this.emitConnection('reconnecting')
-        this.reconnectTimeoutId = setTimeout(() => {
-          this.logger.info('Reconnecting RPC...')
-          reconnectCount += 1
-
-          connect()
-        }, ms)
-      }
+      clearTimeout(this.reconnectTimeoutId)
 
       const state = this.stateManager.getState()
-      if (!state.power || state.rpcConnection === "reconnecting") {
+      if (!state.power) {
         this.logger.warn('Abort reconnect')
         return
       }
 
-      if (reconnectCount <= this.MAX_RECONNECT) {
-        this.logger.info(`Reconnecting RPC after 5 sec... | reconnect count: ${reconnectCount}`)
-        makeTimeout(5000)
-        return
-      }
+      const ms = reconnectCount <= this.MAX_RECONNECT ? 5000 : 10000
+      this.logger.info(`Reconnecting RPC after ${ms / 1000} sec... | reconnect count: ${reconnectCount}`)
 
-      this.logger.warn('Reconnecting RPC after 10 sec...')
-      makeTimeout(10000)
+      this.emitConnection('reconnecting')
+      this.reconnectTimeoutId = setTimeout(() => {
+        this.logger.info('Reconnecting RPC...')
+        reconnectCount += 1
+        connect()
+      }, ms)
     }
 
     connect()
@@ -110,15 +135,15 @@ class AdobeRPC extends EventEmitter {
     this.stopPolling()
     clearTimeout(this.reconnectTimeoutId)
 
-    this.client.clearActivity().then(() => {
-      return this.client.destroy()
-    }).then(() => {
-      this.logger.info('Successfully logout')
-    }).catch((err) => {
-      this.logger.error('Error while trying to logout: ' + err)
-    }).finally(() => {
-      this.emitConnection('disconnected')
-    })
+    this.client.clearActivity()
+      .catch((err) => {
+        this.logger.error('Error while trying to logout: ' + err)
+      })
+      .finally(() => {
+        this.destroyClient()
+        this.logger.info('Successfully logout')
+        this.emitConnection('disconnected')
+      })
   }
 
   setActivity(state) {
@@ -128,14 +153,14 @@ class AdobeRPC extends EventEmitter {
     }
 
     if (state.rpcDetails && state.showDetails) {
-      activity['details'] = state.privacyMode ? state.customDetailsStr || "[Redacted]" : state.rpcDetails
+      activity['details'] = state.privacyMode ? state.customDetailsStr || '[Redacted]' : state.rpcDetails
     }
 
     if (state.rpcState && state.showState) {
-      const prefix = state.customPrefix ? state.customPrefixStr : "Working on"
-      const stateStr = state.privacyMode ? state.customStateStr || "Private" : state.rpcState
+      const prefix = state.customPrefix ? state.customPrefixStr : 'Working on'
+      const stateStr = state.privacyMode ? state.customStateStr || 'Private' : state.rpcState
 
-      activity['state'] = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`;
+      activity['state'] = `${state.rpcState === 'Idling.' ? '' : `${prefix} `}${stateStr}`
     }
 
     activity['smallImageKey'] = state.rpcSmallImageKey
@@ -143,19 +168,23 @@ class AdobeRPC extends EventEmitter {
     activity['partySize'] = parseInt(state.rpcPartySize)
     activity['partyMax'] = parseInt(state.rpcPartyMax)
 
-    state.customImage ? (state.customImageURL ? (activity['largeImageKey'] = state.customImageURL) : null) : null
+    if (state.customImage && state.customImageURL) {
+      activity['largeImageKey'] = state.customImageURL
+    }
 
     if (this.lastActivityInfo && JSON.stringify(this.lastActivityInfo) === JSON.stringify(activity)) {
       this.logger.warn('Aborted setActivity request')
       return
     }
 
-    this.client.setActivity(activity).catch((err) => {
-      this.logger.error(`Failed to update activity : ${err}`)
-    }).then(() => {
-      this.logger.info('Set activity to: ' + JSON.stringify(activity, null, 4))
-      this.lastActivityInfo = activity
-    });
+    this.client.setActivity(activity)
+      .then(() => {
+        this.logger.info('Set activity to: ' + JSON.stringify(activity, null, 4))
+        this.lastActivityInfo = activity
+      })
+      .catch((err) => {
+        this.logger.error(`Failed to update activity : ${err}`)
+      })
   }
 
   async executeScript(func) {
@@ -164,7 +193,6 @@ class AdobeRPC extends EventEmitter {
         resolve(r)
       })
     })
-
   }
 
   startPolling() {
@@ -227,17 +255,17 @@ class AdobeRPC extends EventEmitter {
   }
 
   reload(state) {
-    if (!state.power && (state.rpcConnection === "connected" || state.rpcConnection === "reconnecting")) {
-      this.logger.info("Power is OFF but rpc connection is connected or reconnecting, disconnecting RPC...")
+    if (!state.power && (state.rpcConnection === 'connected' || state.rpcConnection === 'reconnecting')) {
+      this.logger.info('Power is OFF but rpc connection is connected or reconnecting, disconnecting RPC...')
       this.logout()
     }
 
-    if (state.power && state.rpcConnection === "disconnected") {
-      this.logger.info("Power is ON but rpc connection is disconnected, connecting RPC...")
+    if (state.power && state.rpcConnection === 'disconnected') {
+      this.logger.info('Power is ON but rpc connection is disconnected, connecting RPC...')
       this.login()
     }
 
-    if (state.power && state.rpcConnection === "connected") {
+    if (state.power && state.rpcConnection === 'connected') {
       this.logger.info('Updating RPC activity...')
       this.setActivity(state)
     }

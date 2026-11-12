@@ -10,7 +10,7 @@ class ConfigReader {
 
   loadConfig() {
     try {
-      // eslint-disable-next-line no-undef
+       
       const path = this.csInterface.getSystemPath(this.extensionPath)
       const rawConfig = fs.readFileSync(`${path}/config.json`, { encoding: 'utf-8' })
 

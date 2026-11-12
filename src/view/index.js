@@ -7,6 +7,7 @@ import path from 'path'
 const csInterface = new CSInterface();
 
 const getStateEvent = new CSEvent('com.kureichi.rpc.get-state', 'APPLICATION')
+const readyEvent = new CSEvent('com.kureichi.rpc.ready', 'APPLICATION')
 const stateEvent = new CSEvent('com.kureichi.rpc.state-from-view', 'APPLICATION')
 
 const header = document.getElementById('header')
@@ -125,7 +126,6 @@ class App {
         this.childLogger.error('Msg not match')
     }
 
-    // this.childLogger.info(`Updated State to ${JSON.stringify(currentState, null, 2)}`)
     return newModel
   }
 
@@ -162,7 +162,7 @@ class App {
         powerSwitchButton.className = 'power-off'
         break
     }
-    versionInfo.innerHTML = newState.versionInfo
+    versionInfo.innerHTML = newState.versionInfo || 'Checking Version...'
 
     header.onclick = () => dispatch({ type: this.Msg.headerClick })
 
@@ -222,7 +222,11 @@ function main() {
   stateManager.init()
   const app = new App(stateManager)
 
+  let gotState = false
+  let tries = 0
+
   csInterface.addEventListener('com.kureichi.rpc.state-from-backend', (response) => {
+    gotState = true
     stateManager.setState(response.data)
     render()
   })
@@ -248,9 +252,17 @@ function main() {
     app.ViewRender(dispatch)
   }
 
-  setTimeout(() => {
+  const requestState = () => {
+    if (gotState || tries >= 30) return
+    tries += 1
+
+    if (tries === 1 || tries % 5 === 0) csInterface.dispatchEvent(readyEvent)
     csInterface.dispatchEvent(getStateEvent)
-  }, 1000)
+
+    setTimeout(requestState, 1000)
+  }
+
+  setTimeout(requestState, 500)
 }
 
 window.onload = () => main()

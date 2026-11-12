@@ -1,12 +1,27 @@
 import js from "@eslint/js";
 import globals from "globals";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: { 
-    CSInterface: "readonly",
-    CSEvent: "readonly",
-    ...globals.node, 
-    ...globals.browser 
-  } } },
+  globalIgnores([
+    "dist/**",
+    "node_modules/**",
+    "jsx/**",
+    "scripts/semver-gen/**",
+    "scripts/dep/**"
+  ]),
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    plugins: { js },
+    extends: ["js/recommended"],
+    languageOptions: {
+      sourceType: "module",
+      globals: {
+        CSInterface: "readonly",
+        CSEvent: "readonly",
+        ...globals.node,
+        ...globals.browser
+      }
+    }
+  }
 ]);

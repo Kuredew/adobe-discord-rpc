@@ -14,10 +14,15 @@ const getVersion = async ({
   baseLogger,
   csInterface
 }) => {
-  const manifestReader = new ManifestReader(csInterface, SystemPath.EXTENSION)
-  const versionCheck = new VersionCheck(manifestReader, baseLogger.child({ scope: 'VersionCheck' }))
-  const versionInfo = await versionCheck.getVersion()
-  stateManager.setState({ versionInfo: versionInfo })
+  try {
+    const manifestReader = new ManifestReader(csInterface, SystemPath.EXTENSION)
+    const versionCheck = new VersionCheck(manifestReader, baseLogger.child({ scope: 'VersionCheck' }))
+    const versionInfo = await versionCheck.getVersion()
+    stateManager.setState({ versionInfo })
+  } catch (e) {
+    baseLogger.error(`getVersion crashed: ${e}`)
+    stateManager.setState({ versionInfo: 'Unknown version' })
+  }
 }
 
 function main() {
@@ -63,7 +68,6 @@ function main() {
     stateManager.setState({ rpcConnection: connection })
   })
 
-
   stateEvent.registerListener()
   rpc.startService()
 
@@ -77,6 +81,5 @@ function main() {
     csInterface
   })
 }
-
 
 window.onload = () => main()
